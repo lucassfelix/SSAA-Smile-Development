@@ -1,0 +1,35 @@
+{
+  "nodes": {
+    "inside_radius": 8.0,
+    "outside_radius": 10.0,
+    "outside_color": "#404040",
+    "inside_color": "#FFF187"
+  },
+  "bounding_box": {
+    "dash": {
+      "thickness": 0.8,
+      "length": 5.0,
+      "color": "#FFF187"
+    },
+    "min_size": {
+      "width": 300.0,
+      "height": 100.0
+    }
+  },
+  "spline": {
+    "dash": {
+      "thickness": 0.8,
+      "length": 5,
+      "gap": 5,
+      "color": "#FFFFE2"
+    },
+    "default_points": [
+      [300,0],[150,-10],[0,10],[-150,-10],
+      [-300,0],[-150,100],[0,130],[150,100]
+    ]
+  },
+  "mask": {
+    "opacity" : 0.3,
+    "saturation" : 0.5
+  }
+}
