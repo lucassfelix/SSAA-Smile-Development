@@ -33,28 +33,27 @@ jobs:
           chmod +x godot
 
       # --- Export to Web preset defined in export_presets.cfg ---
-      - name: Export Web
+      - name: Export Web to repo root
         run: |
-          mkdir -p dist
-          ./godot --headless --verbose --export-release "Web" dist/index.html
+          ./godot --headless --verbose --export-release "Web" index.html
+
 
       # --- Cache busting for GitHub Pages ---
       # Adds ?v=<commit> to index.js, index.wasm, index.pck, and splash index.png if present.
-      - name: Cache-bust exported HTML
+      - name: Cache-bust root index.html
         run: |
           SHA=$(git rev-parse --short HEAD)
-          HTML="dist/index.html"
-          if [ -f "$HTML" ]; then
-            sed -i "s/index.js/index.js?v=$SHA/g" "$HTML" || true
-            sed -i "s/index.wasm/index.wasm?v=$SHA/g" "$HTML" || true
-            sed -i "s/index.pck/index.pck?v=$SHA/g" "$HTML" || true
-            sed -i "s/index.png/index.png?v=$SHA/g" "$HTML" || true
-          fi
+          HTML="index.html"
+          sed -i "s/index.js/index.js?v=$SHA/g" "$HTML" || true
+          sed -i "s/index.wasm/index.wasm?v=$SHA/g" "$HTML" || true
+          sed -i "s/index.pck/index.pck?v=$SHA/g" "$HTML" || true
+          sed -i "s/index.png/index.png?v=$SHA/g" "$HTML" || true
 
-      - name: Upload Pages artifact
+      - name: Upload Pages artifact (root)
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: .
+
 
   deploy:
     runs-on: ubuntu-latest
