@@ -1,4 +1,4 @@
-name: Build & Deploy Godot Web to GitHub Pages
+name: Deploy Godot Web (cache-busted) to GitHub Pages
 
 on:
   push:
@@ -15,49 +15,43 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # --- Install Godot headless (pick the version you use) ---
-      - name: Download Godot (headless)
+      # Inject a build version into index.html so browsers always fetch the latest files.
+      - name: Cache-bust index.html
         run: |
-          GODOT_VERSION="4.5.1"
-          GODOT_ZIP="Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
-          GODOT_URL="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/${GODOT_ZIP}"
-          wget -q $GODOT_URL -O godot.zip
-          unzip -q godot.zip
-          mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 godot
-          chmod +x godot
-
-      # --- Export to Web preset defined in export_presets.cfg ---
-      - name: Export Web to repo root
-        run: |
-          ./godot --headless --verbose --export-release "Web" index.html
-
-
-      # --- Cache busting for GitHub Pages ---
-      # Adds ?v=<commit> to index.js, index.wasm, index.pck, and splash index.png if present.
-      - name: Cache-bust root index.html
-        run: |
+          set -e
           SHA=$(git rev-parse --short HEAD)
           HTML="index.html"
-          sed -i "s/index.js/index.js?v=$SHA/g" "$HTML" || true
-          sed -i "s/index.wasm/index.wasm?v=$SHA/g" "$HTML" || true
+
+          if [ ! -f "$HTML" ]; then
+            echo "index.html not found at repo root"
+            exit 1
+          fi
+
+          # 1) Bust the index.js script tag
+          # <script src="index.js"></script> -> <script src="index.js?v=SHA"></script>
+          sed -i "s/src=\"index.js\"/src=\"index.js?v=$SHA\"/g" "$HTML" || true
+
+          # 2) Bust the Godot file URLs referenced inside GODOT_CONFIG or loader code
+          # These patterns match your export template.
           sed -i "s/index.pck/index.pck?v=$SHA/g" "$HTML" || true
+          sed -i "s/index.wasm/index.wasm?v=$SHA/g" "$HTML" || true
+
+          # Optional: bust splash image too (if present)
           sed -i "s/index.png/index.png?v=$SHA/g" "$HTML" || true
 
-      - name: Upload Pages artifact (root)
+          echo "Cache-busted with v=$SHA"
+
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
 
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
