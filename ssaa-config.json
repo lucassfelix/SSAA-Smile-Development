@@ -42,7 +42,6 @@
     "resetView": "R",
     "returnToProject": "P",
     "loadConfig": "O",
-    "resetEverything": "D",
-    "toggleOverlayFollowPanZoom": "F"
+    "resetEverything": "D"
   }
 }
