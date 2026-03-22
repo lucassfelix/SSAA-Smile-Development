@@ -1,0 +1,551 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ssaa-smile.local/schemas/config_defaults.schema.json",
+  "title": "Schema de Configuração Padrão (SSAA-Smile)",
+  "description": "Schema do arquivo config_defaults.json usado pelo SSAA-Smile. Todas as descrições estão em português brasileiro e refletem as validações de runtime do ConfigValidator.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "nodes",
+    "boundingBox",
+    "spline",
+    "mask",
+    "interaction",
+    "ui",
+    "shortcuts",
+    "teeth3d",
+    "rotationLine",
+    "rotationHandle",
+    "rotationCircle"
+  ],
+  "$defs": {
+    "corHex": {
+      "type": "string",
+      "pattern": "^#(?:[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$",
+      "description": "Cor em formato hexadecimal. Aceita #RRGGBB ou #RRGGBBAA."
+    },
+    "teclaAtalho": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9]$",
+      "description": "Uma única letra (A-Z) ou dígito (0-9). O sistema normaliza letras para maiúsculo."
+    }
+  },
+  "properties": {
+    "nodes": {
+      "type": "object",
+      "description": "Configurações visuais e geométricas dos nós da spline.",
+      "additionalProperties": false,
+      "required": [
+        "insideRadius",
+        "outsideRadius",
+        "outsideColor",
+        "insideColor"
+      ],
+      "properties": {
+        "insideRadius": {
+          "type": "number",
+          "minimum": 1.0,
+          "maximum": 200.0,
+          "description": "Raio do círculo interno do nó, em pixels."
+        },
+        "outsideRadius": {
+          "type": "number",
+          "minimum": 1.0,
+          "maximum": 400.0,
+          "description": "Raio do círculo externo do nó, em pixels."
+        },
+        "outsideColor": {
+          "$ref": "#/$defs/corHex",
+          "description": "Cor do círculo externo do nó."
+        },
+        "insideColor": {
+          "$ref": "#/$defs/corHex",
+          "description": "Cor do círculo interno do nó."
+        }
+      }
+    },
+    "boundingBox": {
+      "type": "object",
+      "description": "Parâmetros da caixa delimitadora (retângulo de edição/seleção).",
+      "additionalProperties": false,
+      "required": [
+        "thickness",
+        "dashLength",
+        "color",
+        "hoverMargin",
+        "teethOutsideMargin",
+        "minWidth",
+        "minHeight"
+      ],
+      "properties": {
+        "thickness": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 50.0,
+          "description": "Espessura da linha da caixa delimitadora."
+        },
+        "dashLength": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 2000.0,
+          "description": "Comprimento de cada traço do contorno tracejado."
+        },
+        "color": {
+          "$ref": "#/$defs/corHex",
+          "description": "Cor da linha da caixa delimitadora."
+        },
+        "hoverMargin": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 500.0,
+          "description": "Margem extra para facilitar detecção de hover/interação."
+        },
+        "teethOutsideMargin": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 2000.0,
+          "description": "Margem externa aplicada em relação ao conteúdo (dentes)."
+        },
+        "minWidth": {
+          "type": "number",
+          "minimum": 10.0,
+          "maximum": 10000.0,
+          "description": "Largura mínima permitida para a caixa delimitadora."
+        },
+        "minHeight": {
+          "type": "number",
+          "minimum": 10.0,
+          "maximum": 10000.0,
+          "description": "Altura mínima permitida para a caixa delimitadora."
+        }
+      }
+    },
+    "spline": {
+      "type": "object",
+      "description": "Configurações da curva spline usada para o sorriso.",
+      "additionalProperties": false,
+      "required": [
+        "thickness",
+        "dashLength",
+        "dashGap",
+        "color",
+        "defaultNodes"
+      ],
+      "properties": {
+        "thickness": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 50.0,
+          "description": "Espessura da linha da spline."
+        },
+        "dashLength": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 2000.0,
+          "description": "Comprimento dos traços na renderização tracejada da spline."
+        },
+        "dashGap": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 2000.0,
+          "description": "Espaçamento entre traços na renderização da spline."
+        },
+        "color": {
+          "$ref": "#/$defs/corHex",
+          "description": "Cor da spline."
+        },
+        "defaultNodes": {
+          "type": "array",
+          "description": "Lista de pontos padrão da spline no formato [x, y]. Deve conter exatamente 8 pontos.",
+          "minItems": 8,
+          "maxItems": 8,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "number"
+            },
+            "description": "Ponto bidimensional no formato [x, y]."
+          }
+        }
+      }
+    },
+    "mask": {
+      "type": "object",
+      "description": "Parâmetros de máscara/visualização sobre a imagem.",
+      "additionalProperties": false,
+      "required": [
+        "opacity",
+        "saturation"
+      ],
+      "properties": {
+        "opacity": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 1.0,
+          "description": "Opacidade da máscara. 0.01 é quase transparente e 1.0 totalmente opaco."
+        },
+        "saturation": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 1.0,
+          "description": "Saturação aplicada à área com máscara."
+        }
+      }
+    },
+    "interaction": {
+      "type": "object",
+      "description": "Constantes de interação (pan, zoom e sensibilidade de entrada).",
+      "additionalProperties": false,
+      "required": [
+        "panDragFactor",
+        "panScrollFactor",
+        "panWheelStep",
+        "ctrlWheelZoomFactor",
+        "minZoom",
+        "maxZoom",
+        "buttonZoomFactor"
+      ],
+      "properties": {
+        "panDragFactor": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 20.0,
+          "description": "Multiplicador de velocidade ao arrastar para pan."
+        },
+        "panScrollFactor": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 20.0,
+          "description": "Multiplicador de velocidade no pan por scroll."
+        },
+        "panWheelStep": {
+          "type": "number",
+          "minimum": 1.0,
+          "maximum": 500.0,
+          "description": "Passo em pixels aplicado ao pan por roda do mouse."
+        },
+        "ctrlWheelZoomFactor": {
+          "type": "number",
+          "exclusiveMinimum": 1.0,
+          "maximum": 10.0,
+          "description": "Fator multiplicativo de zoom com Ctrl + roda do mouse."
+        },
+        "minZoom": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 10.0,
+          "description": "Menor nível de zoom permitido."
+        },
+        "maxZoom": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 50.0,
+          "description": "Maior nível de zoom permitido. Deve ser maior ou igual a minZoom."
+        },
+        "buttonZoomFactor": {
+          "type": "number",
+          "exclusiveMinimum": 1.0,
+          "maximum": 10.0,
+          "description": "Fator multiplicativo usado pelos botões de zoom da interface."
+        }
+      }
+    },
+    "ui": {
+      "type": "object",
+      "description": "Medidas e estilo de componentes da interface.",
+      "additionalProperties": false,
+      "required": [
+        "topBarHeight",
+        "leftBarWidth",
+        "leftBarIconSpacing",
+        "topBarIconSpacing",
+        "disabledToolIconColor"
+      ],
+      "properties": {
+        "topBarHeight": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 500.0,
+          "description": "Altura da barra superior, em pixels."
+        },
+        "leftBarWidth": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 500.0,
+          "description": "Largura da barra lateral esquerda, em pixels."
+        },
+        "leftBarIconSpacing": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 200.0,
+          "description": "Espaçamento entre ícones na barra lateral esquerda."
+        },
+        "topBarIconSpacing": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 200.0,
+          "description": "Espaçamento entre ícones na barra superior."
+        },
+        "disabledToolIconColor": {
+          "$ref": "#/$defs/corHex",
+          "description": "Cor aplicada aos ícones de ferramentas desabilitadas."
+        }
+      }
+    },
+    "shortcuts": {
+      "type": "object",
+      "description": "Atalhos de teclado configuráveis.",
+      "additionalProperties": false,
+      "required": [
+        "resetView",
+        "returnToProject",
+        "loadConfig",
+        "resetEverything"
+      ],
+      "properties": {
+        "resetView": {
+          "$ref": "#/$defs/teclaAtalho",
+          "description": "Atalho para resetar a visualização."
+        },
+        "returnToProject": {
+          "$ref": "#/$defs/teclaAtalho",
+          "description": "Atalho para retornar ao projeto."
+        },
+        "loadConfig": {
+          "$ref": "#/$defs/teclaAtalho",
+          "description": "Atalho para carregar configuração."
+        },
+        "resetEverything": {
+          "$ref": "#/$defs/teclaAtalho",
+          "description": "Atalho para resetar tudo."
+        }
+      }
+    },
+    "teeth3d": {
+      "type": "object",
+      "description": "Parâmetros de renderização 3D dos dentes para composição no overlay 2D.",
+      "additionalProperties": false,
+      "required": [
+        "cameraDistance",
+        "cameraFov",
+        "lensType",
+        "zoom",
+        "renderMode",
+        "lightColor",
+        "overlayOpacity",
+        "overlayTranslucidity",
+        "defaultPositionX",
+        "defaultPositionY",
+        "defaultScale",
+        "ambientLightEnergy",
+        "reflectionEnergy",
+        "toothRoughness",
+        "directionalLightEnergy",
+        "fillLightEnergy"
+      ],
+      "properties": {
+        "cameraDistance": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 1000.0,
+          "description": "Distância da câmera até o modelo, no eixo Z."
+        },
+        "cameraFov": {
+          "type": "number",
+          "minimum": 1.0,
+          "maximum": 179.0,
+          "description": "Campo de visão usado na lente perspectiva."
+        },
+        "lensType": {
+          "type": "string",
+          "enum": ["perspective", "orthographic"],
+          "description": "Tipo de lente da câmera 3D."
+        },
+        "zoom": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 100.0,
+          "description": "Fator de zoom aplicado à câmera (comportamento depende da lente)."
+        },
+        "renderMode": {
+          "type": "string",
+          "enum": ["full", "wireframe"],
+          "description": "Modo de renderização: modelo completo ou visual de wireframe/contorno."
+        },
+        "lightColor": {
+          "$ref": "#/$defs/corHex",
+          "description": "Cor da luz principal da cena 3D."
+        },
+        "overlayOpacity": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Opacidade base do overlay 2D final dos dentes."
+        },
+        "overlayTranslucidity": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Translucidez adicional aplicada ao overlay 2D final dos dentes."
+        },
+        "defaultPositionX": {
+          "type": "number",
+          "minimum": -2.0,
+          "maximum": 2.0,
+          "description": "Posição inicial relativa dos dentes no eixo X. 0 é o centro da imagem; 1 equivale a meia largura para a direita."
+        },
+        "defaultPositionY": {
+          "type": "number",
+          "minimum": -2.0,
+          "maximum": 2.0,
+          "description": "Posição inicial relativa dos dentes no eixo Y. 0 é o centro da imagem; 1 equivale a meia altura para baixo."
+        },
+        "defaultScale": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 5.0,
+          "description": "Escala inicial relativa ao tamanho da imagem. 1.0 usa o mesmo tamanho da imagem de referência."
+        },
+        "ambientLightEnergy": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 5.0,
+          "description": "Energia da luz ambiente derivada do sky (IBL). Valores maiores iluminam mais o modelo com base na foto do paciente."
+        },
+        "reflectionEnergy": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 5.0,
+          "description": "Intensidade das reflexões do environment map nos dentes."
+        },
+        "toothRoughness": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Rugosidade do material dos dentes. Valores menores tornam os dentes mais brilhantes/reflexivos."
+        },
+        "directionalLightEnergy": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 10.0,
+          "description": "Energia da luz direcional principal (simula flash/luz ambiente do consultório)."
+        },
+        "fillLightEnergy": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 10.0,
+          "description": "Energia da luz de preenchimento (OmniLight posicionada na câmera para preencher sombras)."
+        }
+      }
+    },
+    "rotationLine": {
+      "type": "object",
+      "description": "Parâmetros da linha de rotação exibida sobre o conteúdo.",
+      "additionalProperties": false,
+      "required": [
+        "defaultY",
+        "thickness",
+        "dashLength",
+        "dashGap",
+        "color",
+        "hitAreaHeight"
+      ],
+      "properties": {
+        "defaultY": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Posição vertical inicial normalizada da linha de rotação (0 a 1)."
+        },
+        "thickness": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 50.0,
+          "description": "Espessura da linha de rotação."
+        },
+        "dashLength": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 2000.0,
+          "description": "Comprimento dos traços da linha de rotação."
+        },
+        "dashGap": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 2000.0,
+          "description": "Espaçamento entre traços da linha de rotação."
+        },
+        "color": {
+          "$ref": "#/$defs/corHex",
+          "description": "Cor da linha de rotação."
+        },
+        "hitAreaHeight": {
+          "type": "number",
+          "minimum": 1.0,
+          "maximum": 200.0,
+          "description": "Altura da área de hit test para interação com a linha de rotação."
+        }
+      }
+    },
+    "rotationHandle": {
+      "type": "object",
+      "description": "Parâmetros de sensibilidade e deslocamento da alça de rotação.",
+      "additionalProperties": false,
+      "required": [
+        "rotationFactor",
+        "distanceFromCenter"
+      ],
+      "properties": {
+        "rotationFactor": {
+          "type": "number",
+          "minimum": 0.0001,
+          "maximum": 1.0,
+          "description": "Fator de conversão entre deslocamento do mouse e variação angular."
+        },
+        "distanceFromCenter": {
+          "type": "number",
+          "exclusiveMinimum": 0.0,
+          "maximum": 1.0,
+          "description": "Distância normalizada entre a alça e o alvo de rotação (centro). 0 fica junto ao alvo, 0.5 na borda da imagem e 1.0 no dobro da distância até a borda."
+        }
+      }
+    },
+    "rotationCircle": {
+      "type": "object",
+      "description": "Parâmetros visuais do círculo de rotação.",
+      "additionalProperties": false,
+      "required": [
+        "thickness",
+        "dashLength",
+        "dashGap",
+        "color"
+      ],
+      "properties": {
+        "thickness": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 50.0,
+          "description": "Espessura da linha do círculo de rotação."
+        },
+        "dashLength": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 2000.0,
+          "description": "Comprimento dos traços do círculo de rotação."
+        },
+        "dashGap": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 2000.0,
+          "description": "Espaçamento entre traços do círculo de rotação."
+        },
+        "color": {
+          "$ref": "#/$defs/corHex",
+          "description": "Cor do círculo de rotação."
+        }
+      }
+    }
+  }
+}
