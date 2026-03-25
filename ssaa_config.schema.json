@@ -12,6 +12,7 @@
     "mask",
     "interaction",
     "ui",
+    "flyoutSliders",
     "shortcuts",
     "teeth3d",
     "rotationLine",
@@ -294,6 +295,63 @@
         }
       }
     },
+    "flyoutSliders": {
+      "type": "object",
+      "description": "Configuracao dos flyouts de sliders usados por botoes de ferramenta.",
+      "minProperties": 1,
+      "required": [
+        "default",
+        "brightness",
+        "contrast",
+        "saturation"
+      ],
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "variableLabel",
+          "valueSuffix",
+          "minValue",
+          "maxValue",
+          "step",
+          "defaultValue"
+        ],
+        "properties": {
+          "variableLabel": {
+            "type": "string",
+            "description": "Texto exibido no label que nomeia a variavel controlada pelo slider."
+          },
+          "valueSuffix": {
+            "type": "string",
+            "description": "Sufixo mostrado ao lado do valor em tempo real (ex.: %, px)."
+          },
+          "minValue": {
+            "type": "number",
+            "minimum": -1000000.0,
+            "maximum": 1000000.0,
+            "description": "Valor minimo permitido no slider."
+          },
+          "maxValue": {
+            "type": "number",
+            "minimum": -1000000.0,
+            "maximum": 1000000.0,
+            "description": "Valor maximo permitido no slider. Deve ser maior ou igual ao minimo."
+          },
+          "step": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "maximum": 1000000.0,
+            "description": "Passo de variacao aplicado ao arrastar o slider."
+          },
+          "defaultValue": {
+            "type": "number",
+            "minimum": -1000000.0,
+            "maximum": 1000000.0,
+            "description": "Valor inicial do slider ao abrir o flyout."
+          }
+        }
+      }
+    },
     "shortcuts": {
       "type": "object",
       "description": "Atalhos de teclado configuráveis.",
@@ -328,115 +386,155 @@
       "description": "Parâmetros de renderização 3D dos dentes para composição no overlay 2D.",
       "additionalProperties": false,
       "required": [
-        "cameraDistance",
-        "cameraFov",
-        "lensType",
-        "zoom",
-        "renderMode",
-        "lightColor",
-        "overlayOpacity",
-        "overlayTranslucidity",
-        "defaultPositionX",
-        "defaultPositionY",
-        "defaultScale",
-        "ambientLightEnergy",
-        "reflectionEnergy",
-        "toothRoughness",
-        "directionalLightEnergy",
-        "fillLightEnergy"
+        "camera",
+        "environment",
+        "lighting",
+        "material"
       ],
       "properties": {
-        "cameraDistance": {
-          "type": "number",
-          "minimum": 0.01,
-          "maximum": 1000.0,
-          "description": "Distância da câmera até o modelo, no eixo Z."
+        "camera": {
+          "type": "object",
+          "description": "Configurações de câmera e projeção do render 3D dos dentes.",
+          "additionalProperties": false,
+          "required": [
+            "distance",
+            "fov",
+            "lensType",
+            "zoom",
+            "renderMode"
+          ],
+          "properties": {
+            "distance": {
+              "type": "number",
+              "minimum": 0.01,
+              "maximum": 1000.0,
+              "description": "Distância da câmera até o modelo, no eixo Z."
+            },
+            "fov": {
+              "type": "number",
+              "minimum": 1.0,
+              "maximum": 179.0,
+              "description": "Campo de visão usado na lente perspectiva."
+            },
+            "lensType": {
+              "type": "string",
+              "enum": ["perspective", "orthographic"],
+              "description": "Tipo de lente da câmera 3D."
+            },
+            "zoom": {
+              "type": "number",
+              "minimum": 0.01,
+              "maximum": 100.0,
+              "description": "Fator de zoom aplicado à câmera (comportamento depende da lente)."
+            },
+            "renderMode": {
+              "type": "string",
+              "enum": ["full", "wireframe"],
+              "description": "Modo de renderização: modelo completo ou visual de wireframe/contorno."
+            }
+          }
         },
-        "cameraFov": {
-          "type": "number",
-          "minimum": 1.0,
-          "maximum": 179.0,
-          "description": "Campo de visão usado na lente perspectiva."
+        "environment": {
+          "type": "object",
+          "description": "Parâmetros de ambiente e composição 2D do render dos dentes.",
+          "additionalProperties": false,
+          "required": [
+            "overlayOpacity",
+            "overlayTranslucidity",
+            "defaultPositionX",
+            "defaultPositionY",
+            "defaultScale",
+            "ambientLightEnergy",
+            "reflectionEnergy"
+          ],
+          "properties": {
+            "overlayOpacity": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "description": "Opacidade base do overlay 2D final dos dentes."
+            },
+            "overlayTranslucidity": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "description": "Translucidez adicional aplicada ao overlay 2D final dos dentes."
+            },
+            "defaultPositionX": {
+              "type": "number",
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "description": "Posição inicial relativa dos dentes no eixo X. 0 é o centro da imagem; 1 equivale a meia largura para a direita."
+            },
+            "defaultPositionY": {
+              "type": "number",
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "description": "Posição inicial relativa dos dentes no eixo Y. 0 é o centro da imagem; 1 equivale a meia altura para baixo."
+            },
+            "defaultScale": {
+              "type": "number",
+              "minimum": 0.01,
+              "maximum": 5.0,
+              "description": "Escala inicial relativa ao tamanho da imagem. 1.0 usa o mesmo tamanho da imagem de referência."
+            },
+            "ambientLightEnergy": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 5.0,
+              "description": "Energia da luz ambiente derivada do sky (IBL). Valores maiores iluminam mais o modelo com base na foto do paciente."
+            },
+            "reflectionEnergy": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 5.0,
+              "description": "Intensidade das reflexões do environment map nos dentes."
+            }
+          }
         },
-        "lensType": {
-          "type": "string",
-          "enum": ["perspective", "orthographic"],
-          "description": "Tipo de lente da câmera 3D."
+        "lighting": {
+          "type": "object",
+          "description": "Parâmetros de iluminação direta do render 3D dos dentes.",
+          "additionalProperties": false,
+          "required": [
+            "lightColor",
+            "directionalLightEnergy",
+            "fillLightEnergy"
+          ],
+          "properties": {
+            "lightColor": {
+              "$ref": "#/$defs/corHex",
+              "description": "Cor da luz principal da cena 3D."
+            },
+            "directionalLightEnergy": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 10.0,
+              "description": "Energia da luz direcional principal (simula flash/luz ambiente do consultório)."
+            },
+            "fillLightEnergy": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 10.0,
+              "description": "Energia da luz de preenchimento (OmniLight posicionada na câmera para preencher sombras)."
+            }
+          }
         },
-        "zoom": {
-          "type": "number",
-          "minimum": 0.01,
-          "maximum": 100.0,
-          "description": "Fator de zoom aplicado à câmera (comportamento depende da lente)."
-        },
-        "renderMode": {
-          "type": "string",
-          "enum": ["full", "wireframe"],
-          "description": "Modo de renderização: modelo completo ou visual de wireframe/contorno."
-        },
-        "lightColor": {
-          "$ref": "#/$defs/corHex",
-          "description": "Cor da luz principal da cena 3D."
-        },
-        "overlayOpacity": {
-          "type": "number",
-          "minimum": 0.0,
-          "maximum": 1.0,
-          "description": "Opacidade base do overlay 2D final dos dentes."
-        },
-        "overlayTranslucidity": {
-          "type": "number",
-          "minimum": 0.0,
-          "maximum": 1.0,
-          "description": "Translucidez adicional aplicada ao overlay 2D final dos dentes."
-        },
-        "defaultPositionX": {
-          "type": "number",
-          "minimum": -2.0,
-          "maximum": 2.0,
-          "description": "Posição inicial relativa dos dentes no eixo X. 0 é o centro da imagem; 1 equivale a meia largura para a direita."
-        },
-        "defaultPositionY": {
-          "type": "number",
-          "minimum": -2.0,
-          "maximum": 2.0,
-          "description": "Posição inicial relativa dos dentes no eixo Y. 0 é o centro da imagem; 1 equivale a meia altura para baixo."
-        },
-        "defaultScale": {
-          "type": "number",
-          "minimum": 0.01,
-          "maximum": 5.0,
-          "description": "Escala inicial relativa ao tamanho da imagem. 1.0 usa o mesmo tamanho da imagem de referência."
-        },
-        "ambientLightEnergy": {
-          "type": "number",
-          "minimum": 0.0,
-          "maximum": 5.0,
-          "description": "Energia da luz ambiente derivada do sky (IBL). Valores maiores iluminam mais o modelo com base na foto do paciente."
-        },
-        "reflectionEnergy": {
-          "type": "number",
-          "minimum": 0.0,
-          "maximum": 5.0,
-          "description": "Intensidade das reflexões do environment map nos dentes."
-        },
-        "toothRoughness": {
-          "type": "number",
-          "minimum": 0.0,
-          "maximum": 1.0,
-          "description": "Rugosidade do material dos dentes. Valores menores tornam os dentes mais brilhantes/reflexivos."
-        },
-        "directionalLightEnergy": {
-          "type": "number",
-          "minimum": 0.0,
-          "maximum": 10.0,
-          "description": "Energia da luz direcional principal (simula flash/luz ambiente do consultório)."
-        },
-        "fillLightEnergy": {
-          "type": "number",
-          "minimum": 0.0,
-          "maximum": 10.0,
-          "description": "Energia da luz de preenchimento (OmniLight posicionada na câmera para preencher sombras)."
+        "material": {
+          "type": "object",
+          "description": "Parâmetros de material dos dentes no render 3D.",
+          "additionalProperties": false,
+          "required": [
+            "toothRoughness"
+          ],
+          "properties": {
+            "toothRoughness": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "description": "Rugosidade do material dos dentes. Valores menores tornam os dentes mais brilhantes/reflexivos."
+            }
+          }
         }
       }
     },
