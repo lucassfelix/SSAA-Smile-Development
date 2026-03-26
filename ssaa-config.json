@@ -42,6 +42,7 @@
     "resetView": "R",
     "returnToProject": "P",
     "loadConfig": "O",
+    "downloadConfigJson": "S",
     "resetEverything": "D"
   }
 }

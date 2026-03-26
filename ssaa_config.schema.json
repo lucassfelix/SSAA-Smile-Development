@@ -360,6 +360,7 @@
         "resetView",
         "returnToProject",
         "loadConfig",
+        "downloadConfigJson",
         "resetEverything"
       ],
       "properties": {
@@ -374,6 +375,10 @@
         "loadConfig": {
           "$ref": "#/$defs/teclaAtalho",
           "description": "Atalho para carregar configuração."
+        },
+        "downloadConfigJson": {
+          "$ref": "#/$defs/teclaAtalho",
+          "description": "Atalho para baixar a configuração atual em JSON."
         },
         "resetEverything": {
           "$ref": "#/$defs/teclaAtalho",
