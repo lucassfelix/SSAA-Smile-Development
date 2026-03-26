@@ -32,6 +32,11 @@
     }
   },
   "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri",
+      "description": "URI do schema JSON usado para validação em ferramentas externas."
+    },
     "nodes": {
       "type": "object",
       "description": "Configurações visuais e geométricas dos nós da spline.",
