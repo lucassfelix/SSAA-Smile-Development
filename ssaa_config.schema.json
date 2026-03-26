@@ -14,7 +14,7 @@
     "ui",
     "flyoutSliders",
     "shortcuts",
-    "teeth3d",
+    "threed",
     "rotationLine",
     "rotationHandle",
     "rotationCircle"
@@ -391,20 +391,21 @@
         }
       }
     },
-    "teeth3d": {
+    "threed": {
       "type": "object",
-      "description": "Parâmetros de renderização 3D dos dentes para composição no overlay 2D.",
+      "description": "Configuração da cena 3D de dentes. Cada subobjeto representa um nó/objeto principal da cena de renderização 3D.",
       "additionalProperties": false,
       "required": [
         "camera",
-        "environment",
-        "lighting",
-        "material"
+        "directionalLight",
+        "omniLight",
+        "worldEnvironment",
+        "teethMaterials"
       ],
       "properties": {
         "camera": {
           "type": "object",
-          "description": "Configurações de câmera e projeção do render 3D dos dentes.",
+          "description": "Parâmetros do nó Camera3D. Ajuste aqui para controlar enquadramento, projeção e modo de depuração do render 3D.",
           "additionalProperties": false,
           "required": [
             "distance",
@@ -418,37 +419,108 @@
               "type": "number",
               "minimum": 0.01,
               "maximum": 1000.0,
-              "description": "Distância da câmera até o modelo, no eixo Z."
+              "description": "Distância base da câmera ao modelo no eixo Z. Aumente para afastar e reduzir distorção de perspectiva; diminua para aproximar. O sistema ainda aplica ajuste automático para caber o modelo no frame."
             },
             "fov": {
               "type": "number",
               "minimum": 1.0,
               "maximum": 179.0,
-              "description": "Campo de visão usado na lente perspectiva."
+              "description": "Campo de visão da lente em graus (modo perspective). Valores menores deixam o resultado mais teleobjetiva/sem distorção; valores maiores aumentam sensação de grande angular."
             },
             "lensType": {
               "type": "string",
               "enum": ["perspective", "orthographic"],
-              "description": "Tipo de lente da câmera 3D."
+              "description": "Tipo de projeção da câmera. Use perspective para profundidade realista; use orthographic para eliminar perspectiva e manter proporções planas."
             },
             "zoom": {
               "type": "number",
               "minimum": 0.01,
               "maximum": 100.0,
-              "description": "Fator de zoom aplicado à câmera (comportamento depende da lente)."
+              "description": "Multiplicador de zoom. Em perspective, aumenta/reduz o FOV efetivo; em orthographic, altera o tamanho da janela ortográfica. Valores maiores aproximam visualmente o modelo."
             },
             "renderMode": {
               "type": "string",
               "enum": ["full", "wireframe"],
-              "description": "Modo de renderização: modelo completo ou visual de wireframe/contorno."
+              "description": "Modo de renderização do viewport 3D. full mostra materiais completos; wireframe mostra malha para inspeção de topologia/contorno."
             }
           }
         },
-        "environment": {
+        "directionalLight": {
           "type": "object",
-          "description": "Parâmetros de ambiente e composição 2D do render dos dentes.",
+          "description": "Parâmetros do nó DirectionalLight3D (luz principal). Use para controlar direção aparente de luz, suavidade de sombra e contribuição indireta.",
           "additionalProperties": false,
           "required": [
+            "lightColor",
+            "energy",
+            "indirectEnergy",
+            "volumetricFogEnergy",
+            "angularDistance"
+          ],
+          "properties": {
+            "lightColor": {
+              "$ref": "#/$defs/corHex",
+              "description": "Cor da luz direcional. Tons mais quentes (amarelados) simulam iluminação de consultório; tons frios tendem a deixar o esmalte mais azulado."
+            },
+            "energy": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 10.0,
+              "description": "Intensidade direta da luz principal. Aumente para realçar relevo e brilho; reduza se os dentes ficarem estourados."
+            },
+            "indirectEnergy": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 64.0,
+              "description": "Contribuição indireta da luz direcional. Valores maiores levantam iluminação global (menos contraste de sombra), úteis para suavizar áreas escuras."
+            },
+            "volumetricFogEnergy": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 64.0,
+              "description": "Energia volumétrica associada à luz direcional. Em cenas sem névoa volumétrica visível, normalmente tem pouco efeito; mantenha alto apenas se pipeline volumétrico estiver ativo."
+            },
+            "angularDistance": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 90.0,
+              "description": "Tamanho angular aparente da fonte de luz. Valores maiores suavizam transições/sombras (luz mais difusa); menores deixam iluminação mais dura e definida."
+            }
+          }
+        },
+        "omniLight": {
+          "type": "object",
+          "description": "Parâmetros do nó OmniLight3D (luz de preenchimento). Use para preencher sombras sem perder totalmente o relevo da luz direcional.",
+          "additionalProperties": false,
+          "required": [
+            "lightColor",
+            "energy",
+            "range"
+          ],
+          "properties": {
+            "lightColor": {
+              "$ref": "#/$defs/corHex",
+              "description": "Cor da omni/fill light. Em geral mantenha neutra para não contaminar o tom do dente; use variações pequenas para compensar balanço de branco."
+            },
+            "energy": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 10.0,
+              "description": "Intensidade da luz de preenchimento. Aumente para reduzir sombras profundas; reduza para manter mais contraste e volume."
+            },
+            "range": {
+              "type": "number",
+              "minimum": 0.01,
+              "maximum": 200.0,
+              "description": "Alcance da omni light em unidades 3D. Valores maiores espalham a contribuição por mais área; valores menores concentram o preenchimento próximo da luz."
+            }
+          }
+        },
+        "worldEnvironment": {
+          "type": "object",
+          "description": "Parâmetros do WorldEnvironment e da composição final do overlay dos dentes. Controla IBL/reflexo e mistura do render 3D no resultado 2D.",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
             "overlayOpacity",
             "overlayTranslucidity",
             "defaultPositionX",
@@ -458,81 +530,57 @@
             "reflectionEnergy"
           ],
           "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Ativa/desativa o WorldEnvironment no render 3D. Use true para habilitar iluminação/reflexão via panorama (IBL); use false para desligar environment e manter render mais simples e previsível."
+            },
             "overlayOpacity": {
               "type": "number",
               "minimum": 0.0,
               "maximum": 1.0,
-              "description": "Opacidade base do overlay 2D final dos dentes."
+              "description": "Opacidade base da camada 3D na composição 2D. Aumente para deixar os dentes mais presentes; diminua para mesclar mais com a foto original."
             },
             "overlayTranslucidity": {
               "type": "number",
               "minimum": 0.0,
               "maximum": 1.0,
-              "description": "Translucidez adicional aplicada ao overlay 2D final dos dentes."
+              "description": "Translucidez adicional do overlay. Valores maiores deixam o render mais translúcido, útil para integração sutil com textura da foto."
             },
             "defaultPositionX": {
               "type": "number",
               "minimum": -2.0,
               "maximum": 2.0,
-              "description": "Posição inicial relativa dos dentes no eixo X. 0 é o centro da imagem; 1 equivale a meia largura para a direita."
+              "description": "Posição inicial relativa no eixo X para o overlay de dentes. 0 centraliza; valores positivos movem para a direita; negativos para a esquerda."
             },
             "defaultPositionY": {
               "type": "number",
               "minimum": -2.0,
               "maximum": 2.0,
-              "description": "Posição inicial relativa dos dentes no eixo Y. 0 é o centro da imagem; 1 equivale a meia altura para baixo."
+              "description": "Posição inicial relativa no eixo Y para o overlay de dentes. 0 centraliza; valores positivos descem; negativos sobem."
             },
             "defaultScale": {
               "type": "number",
               "minimum": 0.01,
               "maximum": 5.0,
-              "description": "Escala inicial relativa ao tamanho da imagem. 1.0 usa o mesmo tamanho da imagem de referência."
+              "description": "Escala inicial do overlay 3D em relação ao tamanho base. Aumente para dentes maiores no frame; diminua para reduzir o tamanho inicial."
             },
             "ambientLightEnergy": {
               "type": "number",
               "minimum": 0.0,
               "maximum": 5.0,
-              "description": "Energia da luz ambiente derivada do sky (IBL). Valores maiores iluminam mais o modelo com base na foto do paciente."
+              "description": "Energia de luz ambiente do environment (IBL). Aumente para iluminar sombras gerais; reduza para um resultado mais contrastado."
             },
             "reflectionEnergy": {
               "type": "number",
               "minimum": 0.0,
               "maximum": 5.0,
-              "description": "Intensidade das reflexões do environment map nos dentes."
+              "description": "Multiplicador de reflexão do panorama/IBL. Aumente para brilho/reflexo mais evidente no esmalte; reduza para aparência mais fosca."
             }
           }
         },
-        "lighting": {
+        "teethMaterials": {
           "type": "object",
-          "description": "Parâmetros de iluminação direta do render 3D dos dentes.",
-          "additionalProperties": false,
-          "required": [
-            "lightColor",
-            "directionalLightEnergy",
-            "fillLightEnergy"
-          ],
-          "properties": {
-            "lightColor": {
-              "$ref": "#/$defs/corHex",
-              "description": "Cor da luz principal da cena 3D."
-            },
-            "directionalLightEnergy": {
-              "type": "number",
-              "minimum": 0.0,
-              "maximum": 10.0,
-              "description": "Energia da luz direcional principal (simula flash/luz ambiente do consultório)."
-            },
-            "fillLightEnergy": {
-              "type": "number",
-              "minimum": 0.0,
-              "maximum": 10.0,
-              "description": "Energia da luz de preenchimento (OmniLight posicionada na câmera para preencher sombras)."
-            }
-          }
-        },
-        "material": {
-          "type": "object",
-          "description": "Parâmetros de material dos dentes no render 3D.",
+          "description": "Parâmetros dos materiais dos dentes aplicados no render 3D.",
           "additionalProperties": false,
           "required": [
             "toothRoughness"
@@ -542,7 +590,7 @@
               "type": "number",
               "minimum": 0.0,
               "maximum": 1.0,
-              "description": "Rugosidade do material dos dentes. Valores menores tornam os dentes mais brilhantes/reflexivos."
+              "description": "Rugosidade do material do dente. Valores baixos deixam a superfície mais brilhante/reflexiva; valores altos deixam mais fosca e difusa."
             }
           }
         }
