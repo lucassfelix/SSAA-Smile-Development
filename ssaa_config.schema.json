@@ -412,7 +412,9 @@
             "fov",
             "lensType",
             "zoom",
-            "renderMode"
+            "renderMode",
+            "horizontalOffset",
+            "verticalOffset"
           ],
           "properties": {
             "distance": {
@@ -442,6 +444,18 @@
               "type": "string",
               "enum": ["full", "wireframe"],
               "description": "Modo de renderização do viewport 3D. full mostra materiais completos; wireframe mostra malha para inspeção de topologia/contorno."
+            },
+            "horizontalOffset": {
+              "type": "number",
+              "minimum": -1000.0,
+              "maximum": 1000.0,
+              "description": "Deslocamento horizontal da câmera. O mesmo offset é aplicado ao alvo (look-at), mantendo o enquadramento central do modelo durante pan lateral da câmera."
+            },
+            "verticalOffset": {
+              "type": "number",
+              "minimum": -1000.0,
+              "maximum": 1000.0,
+              "description": "Deslocamento vertical da câmera. O mesmo offset é aplicado ao alvo (look-at), mantendo o foco no modelo durante pan vertical da câmera."
             }
           }
         },
@@ -450,6 +464,13 @@
           "description": "Parâmetros do nó DirectionalLight3D (luz principal). Use para controlar direção aparente de luz, suavidade de sombra e contribuição indireta.",
           "additionalProperties": false,
           "required": [
+            "enabled",
+            "positionX",
+            "positionY",
+            "positionZ",
+            "rotationX",
+            "rotationY",
+            "rotationZ",
             "lightColor",
             "energy",
             "indirectEnergy",
@@ -457,6 +478,46 @@
             "angularDistance"
           ],
           "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Liga/desliga o DirectionalLight3D. Use false para remover a luz principal da cena e avaliar apenas luz ambiente/preenchimento."
+            },
+            "positionX": {
+              "type": "number",
+              "minimum": -1000.0,
+              "maximum": 1000.0,
+              "description": "Posição X da luz direcional no espaço 3D. Para luz direcional, a rotação impacta mais que a posição, mas o valor é exposto para controle completo do nó."
+            },
+            "positionY": {
+              "type": "number",
+              "minimum": -1000.0,
+              "maximum": 1000.0,
+              "description": "Posição Y da luz direcional no espaço 3D."
+            },
+            "positionZ": {
+              "type": "number",
+              "minimum": -1000.0,
+              "maximum": 1000.0,
+              "description": "Posição Z da luz direcional no espaço 3D."
+            },
+            "rotationX": {
+              "type": "number",
+              "minimum": -360.0,
+              "maximum": 360.0,
+              "description": "Rotação em graus no eixo X. Altera o ângulo de incidência principal da luz sobre os dentes."
+            },
+            "rotationY": {
+              "type": "number",
+              "minimum": -360.0,
+              "maximum": 360.0,
+              "description": "Rotação em graus no eixo Y. Útil para mudar lateralidade da iluminação (esquerda/direita)."
+            },
+            "rotationZ": {
+              "type": "number",
+              "minimum": -360.0,
+              "maximum": 360.0,
+              "description": "Rotação em graus no eixo Z. Normalmente usado para ajustes finos de direção percebida."
+            },
             "lightColor": {
               "$ref": "#/$defs/corHex",
               "description": "Cor da luz direcional. Tons mais quentes (amarelados) simulam iluminação de consultório; tons frios tendem a deixar o esmalte mais azulado."
@@ -492,11 +553,58 @@
           "description": "Parâmetros do nó OmniLight3D (luz de preenchimento). Use para preencher sombras sem perder totalmente o relevo da luz direcional.",
           "additionalProperties": false,
           "required": [
+            "enabled",
+            "positionX",
+            "positionY",
+            "positionZ",
+            "rotationX",
+            "rotationY",
+            "rotationZ",
             "lightColor",
             "energy",
             "range"
           ],
           "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Liga/desliga a OmniLight3D. Use false para remover preenchimento e aumentar contraste de sombras."
+            },
+            "positionX": {
+              "type": "number",
+              "minimum": -1000.0,
+              "maximum": 1000.0,
+              "description": "Posição X da omni light. Ajusta de onde o preenchimento parte lateralmente."
+            },
+            "positionY": {
+              "type": "number",
+              "minimum": -1000.0,
+              "maximum": 1000.0,
+              "description": "Posição Y da omni light."
+            },
+            "positionZ": {
+              "type": "number",
+              "minimum": -1000.0,
+              "maximum": 1000.0,
+              "description": "Posição Z da omni light. Aproximar no eixo Z pode intensificar localmente o preenchimento."
+            },
+            "rotationX": {
+              "type": "number",
+              "minimum": -360.0,
+              "maximum": 360.0,
+              "description": "Rotação em graus no eixo X da omni light (exposta para controle completo do nó)."
+            },
+            "rotationY": {
+              "type": "number",
+              "minimum": -360.0,
+              "maximum": 360.0,
+              "description": "Rotação em graus no eixo Y da omni light."
+            },
+            "rotationZ": {
+              "type": "number",
+              "minimum": -360.0,
+              "maximum": 360.0,
+              "description": "Rotação em graus no eixo Z da omni light."
+            },
             "lightColor": {
               "$ref": "#/$defs/corHex",
               "description": "Cor da omni/fill light. Em geral mantenha neutra para não contaminar o tom do dente; use variações pequenas para compensar balanço de branco."
@@ -583,14 +691,40 @@
           "description": "Parâmetros dos materiais dos dentes aplicados no render 3D.",
           "additionalProperties": false,
           "required": [
-            "toothRoughness"
+            "materials"
           ],
           "properties": {
-            "toothRoughness": {
-              "type": "number",
-              "minimum": 0.0,
-              "maximum": 1.0,
-              "description": "Rugosidade do material do dente. Valores baixos deixam a superfície mais brilhante/reflexiva; valores altos deixam mais fosca e difusa."
+            "materials": {
+              "type": "array",
+              "minItems": 6,
+              "maxItems": 6,
+              "description": "Lista fixa com seis materiais de dentes. Cada item define o nome do material-alvo e os ajustes visuais (cor e roughness).",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "name",
+                  "color",
+                  "roughness"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Nome do material a ser aplicado/buscado no modelo 3D. Use o nome do material real da malha, ou fallback material_1..material_6."
+                  },
+                  "color": {
+                    "$ref": "#/$defs/corHex",
+                    "description": "Cor base (albedo) aplicada ao material. Use tons mais claros para esmalte mais branco e tons mais escuros para reduzir brilho percebido."
+                  },
+                  "roughness": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0,
+                    "description": "Rugosidade do material. Valores menores deixam mais reflexivo/brilhante; valores maiores deixam mais fosco e difuso."
+                  }
+                }
+              }
             }
           }
         }
