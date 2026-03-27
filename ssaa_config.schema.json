@@ -400,6 +400,7 @@
         "directionalLight",
         "omniLight",
         "worldEnvironment",
+        "teethModel",
         "teethMaterials"
       ],
       "properties": {
@@ -631,9 +632,6 @@
             "enabled",
             "overlayOpacity",
             "overlayTranslucidity",
-            "defaultPositionX",
-            "defaultPositionY",
-            "defaultScale",
             "ambientLightEnergy",
             "reflectionEnergy"
           ],
@@ -654,24 +652,6 @@
               "maximum": 1.0,
               "description": "Translucidez adicional do overlay. Valores maiores deixam o render mais translúcido, útil para integração sutil com textura da foto."
             },
-            "defaultPositionX": {
-              "type": "number",
-              "minimum": -2.0,
-              "maximum": 2.0,
-              "description": "Posição inicial relativa no eixo X para o overlay de dentes. 0 centraliza; valores positivos movem para a direita; negativos para a esquerda."
-            },
-            "defaultPositionY": {
-              "type": "number",
-              "minimum": -2.0,
-              "maximum": 2.0,
-              "description": "Posição inicial relativa no eixo Y para o overlay de dentes. 0 centraliza; valores positivos descem; negativos sobem."
-            },
-            "defaultScale": {
-              "type": "number",
-              "minimum": 0.01,
-              "maximum": 5.0,
-              "description": "Escala inicial do overlay 3D em relação ao tamanho base. Aumente para dentes maiores no frame; diminua para reduzir o tamanho inicial."
-            },
             "ambientLightEnergy": {
               "type": "number",
               "minimum": 0.0,
@@ -686,6 +666,36 @@
             }
           }
         },
+        "teethModel": {
+          "type": "object",
+          "description": "Parâmetros de posicionamento inicial e escala inicial do modelo 3D de dentes.",
+          "additionalProperties": false,
+          "required": [
+            "defaultPositionX",
+            "defaultPositionY",
+            "defaultScale"
+          ],
+          "properties": {
+            "defaultPositionX": {
+              "type": "number",
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "description": "Posição inicial relativa no eixo X para o modelo de dentes. 0 centraliza; positivos para direita; negativos para esquerda."
+            },
+            "defaultPositionY": {
+              "type": "number",
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "description": "Posição inicial relativa no eixo Y para o modelo de dentes. 0 centraliza; positivos descem; negativos sobem."
+            },
+            "defaultScale": {
+              "type": "number",
+              "minimum": 0.01,
+              "maximum": 5.0,
+              "description": "Escala inicial do modelo 3D em relação ao tamanho base."
+            }
+          }
+        },
         "teethMaterials": {
           "type": "object",
           "description": "Parâmetros dos materiais dos dentes aplicados no render 3D.",
@@ -696,9 +706,9 @@
           "properties": {
             "materials": {
               "type": "array",
-              "minItems": 6,
-              "maxItems": 6,
-              "description": "Lista fixa com seis materiais de dentes. Cada item define o nome do material-alvo e os ajustes visuais (cor e roughness).",
+              "minItems": 1,
+              "maxItems": 1,
+              "description": "Lista fixa com um material de dentes. Cada item define o nome do material-alvo e os ajustes visuais (cor e roughness).",
               "items": {
                 "type": "object",
                 "additionalProperties": false,
