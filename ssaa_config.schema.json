@@ -267,7 +267,9 @@
         "leftBarWidth",
         "leftBarIconSpacing",
         "topBarIconSpacing",
-        "disabledToolIconColor"
+        "disabledToolIconColor",
+        "blurLOD",
+        "blurTintColor"
       ],
       "properties": {
         "topBarHeight": {
@@ -297,6 +299,16 @@
         "disabledToolIconColor": {
           "$ref": "#/$defs/corHex",
           "description": "Cor aplicada aos ícones de ferramentas desabilitadas."
+        },
+        "blurLOD": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 16.0,
+          "description": "Nível de blur aplicado ao material compartilhado da interface (parâmetro shader: lod)."
+        },
+        "blurTintColor": {
+          "$ref": "#/$defs/corHex",
+          "description": "Cor de tint aplicada ao material compartilhado de blur da interface (parâmetro shader: tint_color)."
         }
       }
     },
