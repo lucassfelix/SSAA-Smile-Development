@@ -29,6 +29,52 @@
       "type": "string",
       "pattern": "^[A-Za-z0-9]$",
       "description": "Uma única letra (A-Z) ou dígito (0-9). O sistema normaliza letras para maiúsculo."
+    },
+    "flyoutSliderConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "variableLabel",
+        "valueSuffix",
+        "minValue",
+        "maxValue",
+        "step",
+        "defaultValue"
+      ],
+      "properties": {
+        "variableLabel": {
+          "type": "string",
+          "description": "Texto exibido no label que nomeia a variavel controlada pelo slider."
+        },
+        "valueSuffix": {
+          "type": "string",
+          "description": "Sufixo mostrado ao lado do valor em tempo real (ex.: %, px)."
+        },
+        "minValue": {
+          "type": "number",
+          "minimum": -1000000.0,
+          "maximum": 1000000.0,
+          "description": "Valor minimo permitido no slider."
+        },
+        "maxValue": {
+          "type": "number",
+          "minimum": -1000000.0,
+          "maximum": 1000000.0,
+          "description": "Valor maximo permitido no slider. Deve ser maior ou igual ao minimo."
+        },
+        "step": {
+          "type": "number",
+          "exclusiveMinimum": 0.0,
+          "maximum": 1000000.0,
+          "description": "Passo de variacao aplicado ao arrastar o slider."
+        },
+        "defaultValue": {
+          "type": "number",
+          "minimum": -1000000.0,
+          "maximum": 1000000.0,
+          "description": "Valor inicial do slider ao abrir o flyout."
+        }
+      }
     }
   },
   "properties": {
@@ -315,57 +361,29 @@
     "flyoutSliders": {
       "type": "object",
       "description": "Configuracao dos flyouts de sliders usados por botoes de ferramenta.",
-      "minProperties": 1,
+      "additionalProperties": false,
       "required": [
         "default",
         "brightness",
         "contrast",
-        "saturation"
+        "saturation",
+        "teeth_alpha"
       ],
-      "additionalProperties": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "variableLabel",
-          "valueSuffix",
-          "minValue",
-          "maxValue",
-          "step",
-          "defaultValue"
-        ],
-        "properties": {
-          "variableLabel": {
-            "type": "string",
-            "description": "Texto exibido no label que nomeia a variavel controlada pelo slider."
-          },
-          "valueSuffix": {
-            "type": "string",
-            "description": "Sufixo mostrado ao lado do valor em tempo real (ex.: %, px)."
-          },
-          "minValue": {
-            "type": "number",
-            "minimum": -1000000.0,
-            "maximum": 1000000.0,
-            "description": "Valor minimo permitido no slider."
-          },
-          "maxValue": {
-            "type": "number",
-            "minimum": -1000000.0,
-            "maximum": 1000000.0,
-            "description": "Valor maximo permitido no slider. Deve ser maior ou igual ao minimo."
-          },
-          "step": {
-            "type": "number",
-            "exclusiveMinimum": 0.0,
-            "maximum": 1000000.0,
-            "description": "Passo de variacao aplicado ao arrastar o slider."
-          },
-          "defaultValue": {
-            "type": "number",
-            "minimum": -1000000.0,
-            "maximum": 1000000.0,
-            "description": "Valor inicial do slider ao abrir o flyout."
-          }
+      "properties": {
+        "default": {
+          "$ref": "#/$defs/flyoutSliderConfig"
+        },
+        "brightness": {
+          "$ref": "#/$defs/flyoutSliderConfig"
+        },
+        "contrast": {
+          "$ref": "#/$defs/flyoutSliderConfig"
+        },
+        "saturation": {
+          "$ref": "#/$defs/flyoutSliderConfig"
+        },
+        "teeth_alpha": {
+          "$ref": "#/$defs/flyoutSliderConfig"
         }
       }
     },
@@ -444,12 +462,6 @@
               "type": "string",
               "enum": ["perspective", "orthographic"],
               "description": "Tipo de projeção da câmera. Use perspective para profundidade realista; use orthographic para eliminar perspectiva e manter proporções planas."
-            },
-            "zoom": {
-              "type": "number",
-              "minimum": 0.01,
-              "maximum": 100.0,
-              "description": "Multiplicador de zoom. Em perspective, aumenta/reduz o FOV efetivo; em orthographic, altera o tamanho da janela ortográfica. Valores maiores aproximam visualmente o modelo."
             },
             "renderMode": {
               "type": "string",
