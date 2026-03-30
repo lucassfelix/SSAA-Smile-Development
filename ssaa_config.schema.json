@@ -413,6 +413,7 @@
         "omniLight",
         "worldEnvironment",
         "teethModel",
+        "viewportTexture",
         "teethMaterials"
       ],
       "properties": {
@@ -705,6 +706,36 @@
               "minimum": 0.01,
               "maximum": 5.0,
               "description": "Escala inicial do modelo 3D em relação ao tamanho base."
+            }
+          }
+        },
+        "viewportTexture": {
+          "type": "object",
+          "description": "Parâmetros de posicionamento e escala iniciais do TextureRect de viewport 3D dos dentes. A posição usa o centro do parent como origem (0,0).",
+          "additionalProperties": false,
+          "required": [
+            "defaultPositionX",
+            "defaultPositionY",
+            "defaultScale"
+          ],
+          "properties": {
+            "defaultPositionX": {
+              "type": "number",
+              "minimum": -5000.0,
+              "maximum": 5000.0,
+              "description": "Offset inicial em pixels no eixo X relativo ao centro do parent. 0 centraliza; positivos movem para a direita; negativos para a esquerda."
+            },
+            "defaultPositionY": {
+              "type": "number",
+              "minimum": -5000.0,
+              "maximum": 5000.0,
+              "description": "Offset inicial em pixels no eixo Y relativo ao centro do parent. 0 centraliza; positivos movem para baixo; negativos para cima."
+            },
+            "defaultScale": {
+              "type": "number",
+              "minimum": 0.01,
+              "maximum": 5.0,
+              "description": "Escala inicial do TextureRect de viewport em relação ao tamanho do container."
             }
           }
         },
