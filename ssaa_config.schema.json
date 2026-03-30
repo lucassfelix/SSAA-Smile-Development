@@ -425,10 +425,7 @@
             "distance",
             "fov",
             "lensType",
-            "zoom",
-            "renderMode",
-            "horizontalOffset",
-            "verticalOffset"
+            "renderMode"
           ],
           "properties": {
             "distance": {
@@ -458,18 +455,6 @@
               "type": "string",
               "enum": ["full", "wireframe"],
               "description": "Modo de renderização do viewport 3D. full mostra materiais completos; wireframe mostra malha para inspeção de topologia/contorno."
-            },
-            "horizontalOffset": {
-              "type": "number",
-              "minimum": -1000.0,
-              "maximum": 1000.0,
-              "description": "Deslocamento horizontal da câmera. O mesmo offset é aplicado ao alvo (look-at), mantendo o enquadramento central do modelo durante pan lateral da câmera."
-            },
-            "verticalOffset": {
-              "type": "number",
-              "minimum": -1000.0,
-              "maximum": 1000.0,
-              "description": "Deslocamento vertical da câmera. O mesmo offset é aplicado ao alvo (look-at), mantendo o foco no modelo durante pan vertical da câmera."
             }
           }
         },
@@ -686,7 +671,10 @@
           "required": [
             "defaultPositionX",
             "defaultPositionY",
-            "defaultScale"
+            "defaultScale",
+            "defaultRotationX",
+            "defaultRotationY",
+            "defaultRotationZ"
           ],
           "properties": {
             "defaultPositionX": {
@@ -706,6 +694,24 @@
               "minimum": 0.01,
               "maximum": 5.0,
               "description": "Escala inicial do modelo 3D em relação ao tamanho base."
+            },
+            "defaultRotationX": {
+              "type": "number",
+              "minimum": -360.0,
+              "maximum": 360.0,
+              "description": "Rotação inicial do modelo de dentes no eixo X, em graus."
+            },
+            "defaultRotationY": {
+              "type": "number",
+              "minimum": -360.0,
+              "maximum": 360.0,
+              "description": "Rotação inicial do modelo de dentes no eixo Y, em graus."
+            },
+            "defaultRotationZ": {
+              "type": "number",
+              "minimum": -360.0,
+              "maximum": 360.0,
+              "description": "Rotação inicial do modelo de dentes no eixo Z, em graus."
             }
           }
         },
