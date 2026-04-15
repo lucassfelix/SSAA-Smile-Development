@@ -17,7 +17,8 @@
     "threed",
     "rotationLine",
     "rotationHandle",
-    "rotationCircle"
+    "rotationCircle",
+    "faceLines"
   ],
   "$defs": {
     "corHex": {
@@ -367,6 +368,7 @@
         "brightness",
         "contrast",
         "saturation",
+        "exposure",
         "teeth_alpha"
       ],
       "properties": {
@@ -380,6 +382,9 @@
           "$ref": "#/$defs/flyoutSliderConfig"
         },
         "saturation": {
+          "$ref": "#/$defs/flyoutSliderConfig"
+        },
+        "exposure": {
           "$ref": "#/$defs/flyoutSliderConfig"
         },
         "teeth_alpha": {
@@ -798,6 +803,25 @@
               }
             }
           }
+        }
+      }
+    },
+    "faceLines": {
+      "type": "object",
+      "description": "Cores das linhas de face (face lines) exibidas na ferramenta de análise facial.",
+      "additionalProperties": false,
+      "required": [
+        "centerLine",
+        "outerLines"
+      ],
+      "properties": {
+        "centerLine": {
+          "$ref": "#/$defs/corHex",
+          "description": "Cor da linha central (CenterLine), posicionada no ponto médio entre as duas face lines externas."
+        },
+        "outerLines": {
+          "$ref": "#/$defs/corHex",
+          "description": "Cor das linhas externas (FaceLines) arrastáveis, uma em cada lado do rosto."
         }
       }
     },
