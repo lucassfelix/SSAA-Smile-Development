@@ -313,6 +313,8 @@
         "topBarHeight",
         "leftBarWidth",
         "leftBarIconSpacing",
+        "rightBarWidth",
+        "rightBarIconSpacing",
         "topBarIconSpacing",
         "disabledToolIconColor",
         "blurLOD",
@@ -336,6 +338,18 @@
           "minimum": 0.0,
           "maximum": 200.0,
           "description": "Espaçamento entre ícones na barra lateral esquerda."
+        },
+        "rightBarWidth": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 500.0,
+          "description": "Largura da barra lateral direita, em pixels."
+        },
+        "rightBarIconSpacing": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 200.0,
+          "description": "Espaçamento entre ícones na barra lateral direita."
         },
         "topBarIconSpacing": {
           "type": "number",
