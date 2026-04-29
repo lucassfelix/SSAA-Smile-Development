@@ -18,7 +18,9 @@
     "rotationLine",
     "rotationHandle",
     "rotationCircle",
-    "faceLines"
+    "faceLines",
+    "superposicaoLine",
+    "superposicaoCircle"
   ],
   "$defs": {
     "corHex": {
@@ -318,7 +320,8 @@
         "topBarIconSpacing",
         "disabledToolIconColor",
         "blurLOD",
-        "blurTintColor"
+        "blurTintColor",
+        "caretBlinkInterval"
       ],
       "properties": {
         "topBarHeight": {
@@ -370,6 +373,12 @@
         "blurTintColor": {
           "$ref": "#/$defs/corHex",
           "description": "Cor de tint aplicada ao material compartilhado de blur da interface (parâmetro shader: tint_color)."
+        },
+        "caretBlinkInterval": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 10.0,
+          "description": "Intervalo de piscar do cursor de texto (caret) nos campos de entrada, em segundos."
         }
       }
     },
@@ -383,7 +392,8 @@
         "contrast",
         "saturation",
         "exposure",
-        "teeth_alpha"
+        "teeth_alpha",
+        "superposicao_opacity"
       ],
       "properties": {
         "default": {
@@ -402,6 +412,9 @@
           "$ref": "#/$defs/flyoutSliderConfig"
         },
         "teeth_alpha": {
+          "$ref": "#/$defs/flyoutSliderConfig"
+        },
+        "superposicao_opacity": {
           "$ref": "#/$defs/flyoutSliderConfig"
         }
       }
@@ -943,6 +956,97 @@
         "color": {
           "$ref": "#/$defs/corHex",
           "description": "Cor do círculo de rotação."
+        }
+      }
+    },
+    "superposicaoLine": {
+      "type": "object",
+      "description": "Parâmetros visuais e de interação do divisor vertical da ferramenta Superposição.",
+      "additionalProperties": false,
+      "required": [
+        "color",
+        "dashLength",
+        "dashGap",
+        "thickness",
+        "hitAreaWidth"
+      ],
+      "properties": {
+        "color": {
+          "$ref": "#/$defs/corHex",
+          "description": "Cor do divisor vertical."
+        },
+        "dashLength": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 2000.0,
+          "description": "Comprimento de cada traço do divisor."
+        },
+        "dashGap": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 2000.0,
+          "description": "Espaçamento entre traços do divisor."
+        },
+        "thickness": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 50.0,
+          "description": "Espessura da linha do divisor."
+        },
+        "hitAreaWidth": {
+          "type": "number",
+          "minimum": 1.0,
+          "maximum": 200.0,
+          "description": "Largura da área de hit test do divisor em pixels."
+        }
+      }
+    },
+    "superposicaoCircle": {
+      "type": "object",
+      "description": "Parâmetros visuais e de interação do círculo de rotação da ferramenta Superposição.",
+      "additionalProperties": false,
+      "required": [
+        "color",
+        "dashLength",
+        "dashGap",
+        "thickness",
+        "hitAreaWidth",
+        "radiusFraction"
+      ],
+      "properties": {
+        "color": {
+          "$ref": "#/$defs/corHex",
+          "description": "Cor do círculo de superposição."
+        },
+        "dashLength": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 2000.0,
+          "description": "Comprimento de cada traço do círculo."
+        },
+        "dashGap": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 2000.0,
+          "description": "Espaçamento entre traços do círculo."
+        },
+        "thickness": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 50.0,
+          "description": "Espessura da linha do círculo."
+        },
+        "hitAreaWidth": {
+          "type": "number",
+          "minimum": 1.0,
+          "maximum": 200.0,
+          "description": "Largura da área de hit test ao redor do círculo em pixels."
+        },
+        "radiusFraction": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 1.0,
+          "description": "Fração da largura da imagem usada como raio do círculo (0.35 = 35% da largura)."
         }
       }
     }
