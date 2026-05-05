@@ -20,7 +20,9 @@
     "rotationCircle",
     "faceLines",
     "superposicaoLine",
-    "superposicaoCircle"
+    "superposicaoCircle",
+    "superposicaoScaleHandle",
+    "superposicaoRotationHandle"
   ],
   "$defs": {
     "corHex": {
@@ -1047,6 +1049,38 @@
           "minimum": 0.01,
           "maximum": 1.0,
           "description": "Fração da largura da imagem usada como raio do círculo (0.35 = 35% da largura)."
+        }
+      }
+    },
+    "superposicaoScaleHandle": {
+      "type": "object",
+      "description": "Parâmetros visuais dos handles de escala da ferramenta Superposição.",
+      "additionalProperties": false,
+      "required": [
+        "idleOpacity"
+      ],
+      "properties": {
+        "idleOpacity": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Opacidade dos handles quando nenhum está sob o cursor (0 = invisível, 1 = opaco)."
+        }
+      }
+    },
+    "superposicaoRotationHandle": {
+      "type": "object",
+      "description": "Parâmetros visuais do handle e do círculo de rotação da ferramenta Superposição.",
+      "additionalProperties": false,
+      "required": [
+        "idleOpacity"
+      ],
+      "properties": {
+        "idleOpacity": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Opacidade do handle e do círculo de rotação quando o handle não está sob o cursor nem em arrasto (0 = invisível, 1 = opaco)."
         }
       }
     }
