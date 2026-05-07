@@ -22,7 +22,8 @@
     "superposicaoLine",
     "superposicaoCircle",
     "superposicaoScaleHandle",
-    "superposicaoRotationHandle"
+    "superposicaoRotationHandle",
+    "superposicaoLabels"
   ],
   "$defs": {
     "corHex": {
@@ -399,25 +400,32 @@
       ],
       "properties": {
         "default": {
-          "$ref": "#/$defs/flyoutSliderConfig"
+          "$ref": "#/$defs/flyoutSliderConfig",
+          "description": "Configuração genérica de fallback para flyout sliders sem configuração específica."
         },
         "brightness": {
-          "$ref": "#/$defs/flyoutSliderConfig"
+          "$ref": "#/$defs/flyoutSliderConfig",
+          "description": "Controla o ajuste de brilho da imagem."
         },
         "contrast": {
-          "$ref": "#/$defs/flyoutSliderConfig"
+          "$ref": "#/$defs/flyoutSliderConfig",
+          "description": "Controla o ajuste de contraste da imagem."
         },
         "saturation": {
-          "$ref": "#/$defs/flyoutSliderConfig"
+          "$ref": "#/$defs/flyoutSliderConfig",
+          "description": "Controla o ajuste de saturação da imagem."
         },
         "exposure": {
-          "$ref": "#/$defs/flyoutSliderConfig"
+          "$ref": "#/$defs/flyoutSliderConfig",
+          "description": "Controla o ajuste de exposição da imagem."
         },
         "teeth_alpha": {
-          "$ref": "#/$defs/flyoutSliderConfig"
+          "$ref": "#/$defs/flyoutSliderConfig",
+          "description": "Controla a opacidade da camada de dentes 3D sobre a imagem."
         },
         "superposicao_opacity": {
-          "$ref": "#/$defs/flyoutSliderConfig"
+          "$ref": "#/$defs/flyoutSliderConfig",
+          "description": "Controla a opacidade do lado da imagem na ferramenta Superposição."
         }
       }
     },
@@ -430,6 +438,7 @@
         "returnToProject",
         "loadConfig",
         "downloadConfigJson",
+        "resetCache",
         "resetEverything"
       ],
       "properties": {
@@ -448,6 +457,10 @@
         "downloadConfigJson": {
           "$ref": "#/$defs/teclaAtalho",
           "description": "Atalho para baixar a configuração atual em JSON."
+        },
+        "resetCache": {
+          "$ref": "#/$defs/teclaAtalho",
+          "description": "Atalho para limpar o cache de imagens (debug)."
         },
         "resetEverything": {
           "$ref": "#/$defs/teclaAtalho",
@@ -1093,35 +1106,35 @@
           "description": "Limites verticais de deslocamento dos handles (px).",
           "additionalProperties": false,
           "required": [
-            "slot0TopMarginPx",
-            "slot0BottomMarginPx",
-            "slot1TopMarginPx",
-            "slot1BottomMarginPx"
+            "topHandleTopMarginPx",
+            "topHandleBottomMarginPx",
+            "bottomHandleTopMarginPx",
+            "bottomHandleBottomMarginPx"
           ],
           "properties": {
-            "slot0TopMarginPx": {
+            "topHandleTopMarginPx": {
               "type": "number",
               "minimum": 0.0,
               "maximum": 2000.0,
-              "description": "Margem do topo para o handle slot 0 (distância mínima até o bottom do TopBar)."
+              "description": "Margem superior do handle de topo (distância mínima em px até o bottom da TopBar)."
             },
-            "slot0BottomMarginPx": {
+            "topHandleBottomMarginPx": {
               "type": "number",
               "minimum": 0.0,
               "maximum": 2000.0,
-              "description": "Margem inferior do handle slot 0 (distância até a linha do meio da viewport)."
+              "description": "Margem inferior do handle de topo (distância mínima em px até a linha central da viewport)."
             },
-            "slot1TopMarginPx": {
+            "bottomHandleTopMarginPx": {
               "type": "number",
               "minimum": 0.0,
               "maximum": 2000.0,
-              "description": "Margem superior do handle slot 1 (distância a partir da linha do meio da viewport)."
+              "description": "Margem superior do handle inferior (distância mínima em px a partir da linha central da viewport)."
             },
-            "slot1BottomMarginPx": {
+            "bottomHandleBottomMarginPx": {
               "type": "number",
               "minimum": 0.0,
               "maximum": 2000.0,
-              "description": "Margem inferior do handle slot 1 (distância mínima até o fundo da viewport)."
+              "description": "Margem inferior do handle inferior (distância mínima em px até o fundo da viewport)."
             }
           }
         }
