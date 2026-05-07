@@ -1013,6 +1013,7 @@
         "dashGap",
         "thickness",
         "hitAreaWidth",
+        "idleOpacity",
         "radiusFraction"
       ],
       "properties": {
@@ -1044,6 +1045,12 @@
           "maximum": 200.0,
           "description": "Largura da área de hit test ao redor do círculo em pixels."
         },
+        "idleOpacity": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Opacidade do círculo quando o handle de rotação não está em hover/drag."
+        },
         "radiusFraction": {
           "type": "number",
           "minimum": 0.01,
@@ -1057,7 +1064,10 @@
       "description": "Parâmetros visuais dos handles de escala da ferramenta Superposição.",
       "additionalProperties": false,
       "required": [
-        "idleOpacity"
+        "idleOpacity",
+        "dragVerticalMargin",
+        "scaleMult",
+        "limits"
       ],
       "properties": {
         "idleOpacity": {
@@ -1065,6 +1075,55 @@
           "minimum": 0.0,
           "maximum": 1.0,
           "description": "Opacidade dos handles quando nenhum está sob o cursor (0 = invisível, 1 = opaco)."
+        },
+        "dragVerticalMargin": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1000.0,
+          "description": "Margem vertical antiga (legacy) usada para limitar deslocamento visual durante arrasto."
+        },
+        "scaleMult": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 20.0,
+          "description": "Multiplicador aplicado à sensibilidade de escala dos handles."
+        },
+        "limits": {
+          "type": "object",
+          "description": "Limites verticais de deslocamento dos handles (px).",
+          "additionalProperties": false,
+          "required": [
+            "slot0TopMarginPx",
+            "slot0BottomMarginPx",
+            "slot1TopMarginPx",
+            "slot1BottomMarginPx"
+          ],
+          "properties": {
+            "slot0TopMarginPx": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 2000.0,
+              "description": "Margem do topo para o handle slot 0 (distância mínima até o bottom do TopBar)."
+            },
+            "slot0BottomMarginPx": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 2000.0,
+              "description": "Margem inferior do handle slot 0 (distância até a linha do meio da viewport)."
+            },
+            "slot1TopMarginPx": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 2000.0,
+              "description": "Margem superior do handle slot 1 (distância a partir da linha do meio da viewport)."
+            },
+            "slot1BottomMarginPx": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 2000.0,
+              "description": "Margem inferior do handle slot 1 (distância mínima até o fundo da viewport)."
+            }
+          }
         }
       }
     },
@@ -1081,6 +1140,41 @@
           "minimum": 0.0,
           "maximum": 1.0,
           "description": "Opacidade do handle e do círculo de rotação quando o handle não está sob o cursor nem em arrasto (0 = invisível, 1 = opaco)."
+        }
+      }
+    },
+    "superposicaoLabels": {
+      "type": "object",
+      "description": "Parâmetros visuais dos labels (Sem/Com afastador) da ferramenta Superposição.",
+      "additionalProperties": false,
+      "required": [
+        "shadowColor",
+        "shadowOffsetX",
+        "shadowOffsetY",
+        "shadowOutlineSize"
+      ],
+      "properties": {
+        "shadowColor": {
+          "$ref": "#/$defs/corHex",
+          "description": "Cor da sombra do texto (hex). Use alpha para controlar intensidade."
+        },
+        "shadowOffsetX": {
+          "type": "number",
+          "minimum": -64.0,
+          "maximum": 64.0,
+          "description": "Offset horizontal da sombra do texto (px)."
+        },
+        "shadowOffsetY": {
+          "type": "number",
+          "minimum": -64.0,
+          "maximum": 64.0,
+          "description": "Offset vertical da sombra do texto (px)."
+        },
+        "shadowOutlineSize": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 32.0,
+          "description": "Espessura do contorno da sombra (px)."
         }
       }
     }
