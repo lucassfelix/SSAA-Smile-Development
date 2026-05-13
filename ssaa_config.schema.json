@@ -23,7 +23,8 @@
     "superposicaoCircle",
     "superposicaoScaleHandle",
     "superposicaoRotationHandle",
-    "superposicaoLabels"
+    "superposicaoLabels",
+    "drawing"
   ],
   "$defs": {
     "corHex": {
@@ -263,7 +264,9 @@
         "ctrlWheelZoomFactor",
         "minZoom",
         "maxZoom",
-        "buttonZoomFactor"
+        "buttonZoomFactor",
+        "tipAutoDismissSeconds",
+        "showTips"
       ],
       "properties": {
         "panDragFactor": {
@@ -307,6 +310,16 @@
           "exclusiveMinimum": 1.0,
           "maximum": 10.0,
           "description": "Fator multiplicativo usado pelos botões de zoom da interface."
+        },
+        "tipAutoDismissSeconds": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 120.0,
+          "description": "Tempo em segundos até a dica sumir automaticamente (dismiss por clique continua válido)."
+        },
+        "showTips": {
+          "type": "boolean",
+          "description": "Quando true, as dicas contextuais (tips) na tela de documento são exibidas; quando false, nenhuma dica é mostrada."
         }
       }
     },
@@ -1188,6 +1201,21 @@
           "minimum": 0.0,
           "maximum": 32.0,
           "description": "Espessura do contorno da sombra (px)."
+        }
+      }
+    },
+    "drawing": {
+      "type": "object",
+      "description": "Parâmetros gerais do pipeline de desenho 2D.",
+      "additionalProperties": false,
+      "required": [
+        "antiAliased"
+      ],
+      "properties": {
+        "antiAliased": {
+          "type": "boolean",
+          "default": true,
+          "description": "Quando true, todos os draw_line e draw_circle usam anti-aliasing. Quando false, bordas crisp em todos os elementos desenhados. O workaround do Firefox/macOS (quad dashes) não é afetado por este flag."
         }
       }
     }
