@@ -1209,13 +1209,21 @@
       "description": "Parâmetros gerais do pipeline de desenho 2D.",
       "additionalProperties": false,
       "required": [
-        "antiAliased"
+        "antiAliased",
+        "coordinateQuantizationStep"
       ],
       "properties": {
         "antiAliased": {
           "type": "boolean",
           "default": true,
           "description": "Quando true, todos os draw_line e draw_circle usam anti-aliasing. Quando false, bordas crisp em todos os elementos desenhados. O workaround do Firefox/macOS (quad dashes) não é afetado por este flag."
+        },
+        "coordinateQuantizationStep": {
+          "type": "number",
+          "default": 0.0,
+          "minimum": 0.0,
+          "maximum": 4.0,
+          "description": "Passo de grade para quantizar vértices 2D antes de desenhar (0 = desligado). Ex.: 0.5 = meio pixel, reduz shimmer em traços com zoom."
         }
       }
     }
