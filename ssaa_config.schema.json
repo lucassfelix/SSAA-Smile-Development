@@ -491,6 +491,7 @@
         "omniLight",
         "worldEnvironment",
         "teethModel",
+        "teethWidthDistribution",
         "viewportTexture",
         "teethMaterials"
       ],
@@ -784,6 +785,49 @@
               "minimum": -360.0,
               "maximum": 360.0,
               "description": "Rotação inicial do modelo de dentes no eixo Z, em graus."
+            }
+          }
+        },
+        "teethWidthDistribution": {
+          "type": "object",
+          "description": "Distribuição proporcional de largura por dente (ferramenta LARGURA). Mantém o span total da arcada e espelha pares entre quadrantes.",
+          "additionalProperties": false,
+          "required": [
+            "referenceTeeth",
+            "mirrorPairs",
+            "contrastExponent"
+          ],
+          "properties": {
+            "referenceTeeth": {
+              "type": "array",
+              "description": "Nomes dos nós de dente do quadrante de referência (4 dentes), ordenados mesial→distal na aplicação.",
+              "minItems": 4,
+              "maxItems": 4,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "mirrorPairs": {
+              "type": "array",
+              "description": "Pares [referência, espelho] entre quadrantes (4 pares).",
+              "minItems": 4,
+              "maxItems": 4,
+              "items": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "contrastExponent": {
+              "type": "number",
+              "minimum": 1.0,
+              "maximum": 8.0,
+              "description": "Expoente para contrastar proporções naturais no slider em 75% (MIN)."
             }
           }
         },
