@@ -267,7 +267,8 @@
         "maxZoom",
         "buttonZoomFactor",
         "tipAutoDismissSeconds",
-        "showTips"
+        "showTips",
+        "invertedScrollPan"
       ],
       "properties": {
         "panDragFactor": {
@@ -321,6 +322,10 @@
         "showTips": {
           "type": "boolean",
           "description": "Quando true, as dicas contextuais (tips) na tela de documento são exibidas; quando false, nenhuma dica é mostrada."
+        },
+        "invertedScrollPan": {
+          "type": "boolean",
+          "description": "Quando true, o pan vertical por roda do mouse segue o sentido invertido (comportamento legado). Quando false, scroll para cima move a imagem para cima."
         }
       }
     },
@@ -927,22 +932,21 @@
     },
     "larguraPresets": {
       "type": "object",
-      "description": "Presets de largura: lista de referências configuráveis com 3 frações por preset e parâmetros de desenho das linhas.",
+      "description": "Presets de largura: lista de referências configuráveis com 2 frações por preset e parâmetros de desenho das linhas.",
       "additionalProperties": false,
-      "required": ["presets", "lineColor", "lineWidth", "lineHeight"],
+      "required": ["presets", "lineColor", "lineWidth", "lineHalfExtentPx"],
       "properties": {
         "presets": {
           "type": "array",
-          "description": "Lista de presets de largura. Cada preset tem nome e três frações (0.0 a 1.0).",
+          "description": "Lista de presets de largura. Cada preset tem nome e duas frações (0.0 a 1.0).",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["name", "fraction1", "fraction2", "fraction3"],
+            "required": ["name", "fraction1", "fraction2"],
             "properties": {
               "name": { "type": "string", "minLength": 1, "description": "Nome exibido no dropdown." },
               "fraction1": { "type": "number", "minimum": 0.0, "maximum": 1.0, "description": "Fração 1 (0 = face line, 1 = centro)." },
-              "fraction2": { "type": "number", "minimum": 0.0, "maximum": 1.0, "description": "Fração 2 (0 = face line, 1 = centro)." },
-              "fraction3": { "type": "number", "minimum": 0.0, "maximum": 1.0, "description": "Fração 3 (0 = face line, 1 = centro)." }
+              "fraction2": { "type": "number", "minimum": 0.0, "maximum": 1.0, "description": "Fração 2 (0 = face line, 1 = centro)." }
             }
           }
         },
@@ -956,11 +960,11 @@
           "maximum": 50.0,
           "description": "Espessura do traço das linhas de referência (pixels antes de compensação de zoom)."
         },
-        "lineHeight": {
+        "lineHalfExtentPx": {
           "type": "number",
-          "minimum": 0.0,
-          "maximum": 1.0,
-          "description": "Fração da altura visível da imagem que a linha ocupa (1.0 = altura total)."
+          "minimum": 1.0,
+          "maximum": 5000.0,
+          "description": "Extensão vertical de cada linha (pixels de imagem) a partir do centro da bounding box dos dentes."
         }
       }
     },
