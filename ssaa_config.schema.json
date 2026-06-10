@@ -10,6 +10,7 @@
     "boundingBox",
     "spline",
     "mask",
+    "debug",
     "interaction",
     "ui",
     "flyoutSliders",
@@ -42,7 +43,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "variableLabel",
         "valueSuffix",
         "minValue",
         "maxValue",
@@ -52,11 +52,15 @@
       "properties": {
         "variableLabel": {
           "type": "string",
-          "description": "Texto exibido no label que nomeia a variavel controlada pelo slider."
+          "description": "Texto exibido no label que nomeia a variavel controlada pelo slider. Opcional; quando omitido o sistema usa o proprio nome da chave como rotulo."
         },
         "valueSuffix": {
           "type": "string",
           "description": "Sufixo mostrado ao lado do valor em tempo real (ex.: %, px)."
+        },
+        "valueFormat": {
+          "type": "string",
+          "description": "Template de formatacao printf para exibicao do valor (ex.: %+.2f%s, %.0f%s, %3d%s)."
         },
         "minValue": {
           "type": "number",
@@ -254,6 +258,20 @@
         }
       }
     },
+    "debug": {
+      "type": "object",
+      "description": "Flags de depuração/desenvolvimento para diagnóstico em runtime.",
+      "additionalProperties": false,
+      "required": [
+        "showDebugLogs"
+      ],
+      "properties": {
+        "showDebugLogs": {
+          "type": "boolean",
+          "description": "Quando true, exibe logs de debug no console (Godot). Quando false, suprime saida de diagnostico."
+        }
+      }
+    },
     "interaction": {
       "type": "object",
       "description": "Constantes de interação (pan, zoom e sensibilidade de entrada).",
@@ -343,7 +361,9 @@
         "disabledToolIconColor",
         "blurLOD",
         "blurTintColor",
-        "caretBlinkInterval"
+        "caretBlinkInterval",
+        "fontThemes",
+        "fontOverride"
       ],
       "properties": {
         "topBarHeight": {
@@ -401,6 +421,61 @@
           "minimum": 0.1,
           "maximum": 10.0,
           "description": "Intervalo de piscar do cursor de texto (caret) nos campos de entrada, em segundos."
+        },
+        "fontThemes": {
+          "type": "object",
+          "description": "Temas de fonte nomeados usados em toda a interface. Cada chave define um tema com tamanho, cor e arquivo de fonte.",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["size", "color", "asset"],
+            "properties": {
+              "size": {
+                "type": "number",
+                "minimum": 1,
+                "maximum": 256,
+                "description": "Tamanho da fonte em pontos."
+              },
+              "color": {
+                "$ref": "#/$defs/corHex",
+                "description": "Cor do texto no tema."
+              },
+              "asset": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Nome do arquivo de fonte (ex.: Roboto-Bold.ttf). Deve existir em assets/fonts/."
+              }
+            }
+          }
+        },
+        "fontOverride": {
+          "type": "object",
+          "description": "Sobrescritas por elemento da interface. Cada chave representa um elemento cujo tema, cor, tamanho ou asset de fonte pode ser sobrescrito.",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["theme", "asset", "color", "size"],
+            "properties": {
+              "theme": {
+                "type": "string",
+                "description": "Nome do tema de fonte base (deve existir em fontThemes)."
+              },
+              "asset": {
+                "type": "string",
+                "description": "Sobrescrita de arquivo de fonte. String vazia mantém o asset do tema base."
+              },
+              "color": {
+                "type": "string",
+                "description": "Sobrescrita de cor em hex. String vazia mantém a cor do tema base."
+              },
+              "size": {
+                "type": "number",
+                "minimum": 0.0,
+                "maximum": 256.0,
+                "description": "Sobrescrita de tamanho. 0.0 mantém o tamanho do tema base."
+              }
+            }
+          }
         }
       }
     },
@@ -415,7 +490,11 @@
         "saturation",
         "exposure",
         "teeth_alpha",
-        "superposicao_opacity"
+        "overlap_opacity",
+        "height",
+        "width",
+        "value",
+        "hue"
       ],
       "properties": {
         "default": {
@@ -442,9 +521,25 @@
           "$ref": "#/$defs/flyoutSliderConfig",
           "description": "Controla a opacidade da camada de dentes 3D sobre a imagem."
         },
-        "superposicao_opacity": {
+        "overlap_opacity": {
           "$ref": "#/$defs/flyoutSliderConfig",
           "description": "Controla a opacidade do lado da imagem na ferramenta Superposição."
+        },
+        "height": {
+          "$ref": "#/$defs/flyoutSliderConfig",
+          "description": "Controla o ajuste de altura (escala vertical) da imagem."
+        },
+        "width": {
+          "$ref": "#/$defs/flyoutSliderConfig",
+          "description": "Controla o ajuste de largura (escala horizontal) da imagem."
+        },
+        "value": {
+          "$ref": "#/$defs/flyoutSliderConfig",
+          "description": "Controla o ajuste de valor (luminosidade HSV) da imagem."
+        },
+        "hue": {
+          "$ref": "#/$defs/flyoutSliderConfig",
+          "description": "Controla o ajuste de matiz (hue) da imagem."
         }
       }
     },
@@ -499,7 +594,7 @@
         "teethModel",
         "teethWidthDistribution",
         "viewportTexture",
-        "teethMaterials"
+        "teethColor"
       ],
       "properties": {
         "camera": {
@@ -867,45 +962,19 @@
             }
           }
         },
-        "teethMaterials": {
+        "teethColor": {
           "type": "object",
-          "description": "Parâmetros dos materiais dos dentes aplicados no render 3D.",
+          "description": "Ajuste de cor do material dos dentes no render 3D. Aplica-se ao material compartilhado do modelo.",
           "additionalProperties": false,
           "required": [
-            "materials"
+            "saturation"
           ],
           "properties": {
-            "materials": {
-              "type": "array",
-              "minItems": 1,
-              "maxItems": 1,
-              "description": "Lista fixa com um material de dentes. Cada item define o nome do material-alvo e os ajustes visuais (cor e roughness).",
-              "items": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "name",
-                  "color",
-                  "roughness"
-                ],
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "minLength": 1,
-                    "description": "Nome do material a ser aplicado/buscado no modelo 3D. Use o nome do material real da malha, ou fallback material_1..material_6."
-                  },
-                  "color": {
-                    "$ref": "#/$defs/corHex",
-                    "description": "Cor base (albedo) aplicada ao material. Use tons mais claros para esmalte mais branco e tons mais escuros para reduzir brilho percebido."
-                  },
-                  "roughness": {
-                    "type": "number",
-                    "minimum": 0.0,
-                    "maximum": 1.0,
-                    "description": "Rugosidade do material. Valores menores deixam mais reflexivo/brilhante; valores maiores deixam mais fosco e difuso."
-                  }
-                }
-              }
+            "saturation": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "description": "Saturação aplicada ao material dos dentes. 0.0 remove toda cor (tons de cinza), 1.0 mantém saturação total."
             }
           }
         }
