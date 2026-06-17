@@ -584,16 +584,9 @@
               "minimum": -1000000.0,
               "maximum": 1000000.0,
               "description": "Valor inicial do slider ao abrir o flyout."
-            },
-            "saturationDecreasePoint": {
-              "type": "number",
-              "minimum": 0.0,
-              "maximum": 180.0,
-              "default": 150.0,
-              "description": "Valor absoluto de matiz (0–180) a partir do qual a saturação começa a diminuir linearmente até 0 nos extremos (±180). Ex.: com 150, saturação máxima é mantida de 0 a ±150 e cai de ±150 a ±180."
             }
           },
-          "description": "Controla o ajuste de matiz (hue) da imagem. Inclui ponto de queda de saturação específico da ferramenta de matiz."
+          "description": "Controla o ajuste de matiz (hue) da imagem."
         },
         "teeth_saturation": {
           "$ref": "#/$defs/flyoutSliderConfig",
