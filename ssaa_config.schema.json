@@ -362,8 +362,8 @@
         "blurLOD",
         "blurTintColor",
         "caretBlinkInterval",
-        "fontThemes",
-        "fontOverride"
+        "fontStyles",
+        "fontOverrides"
       ],
       "properties": {
         "topBarHeight": {
@@ -422,9 +422,9 @@
           "maximum": 10.0,
           "description": "Intervalo de piscar do cursor de texto (caret) nos campos de entrada, em segundos."
         },
-        "fontThemes": {
+        "fontStyles": {
           "type": "object",
-          "description": "Temas de fonte nomeados usados em toda a interface. Cada chave define um tema com tamanho, cor e arquivo de fonte.",
+          "description": "Estilos de fonte nomeados usados em toda a interface. Cada chave define um estilo com tamanho, cor e arquivo de fonte.",
           "additionalProperties": {
             "type": "object",
             "additionalProperties": false,
@@ -438,7 +438,7 @@
               },
               "color": {
                 "$ref": "#/$defs/corHex",
-                "description": "Cor do texto no tema."
+                "description": "Cor do texto no estilo."
               },
               "asset": {
                 "type": "string",
@@ -448,31 +448,31 @@
             }
           }
         },
-        "fontOverride": {
+        "fontOverrides": {
           "type": "object",
-          "description": "Sobrescritas por elemento da interface. Cada chave representa um elemento cujo tema, cor, tamanho ou asset de fonte pode ser sobrescrito.",
+          "description": "Sobrescritas por elemento da interface. Cada chave representa um elemento cujo estilo, cor, tamanho ou asset de fonte pode ser sobrescrito.",
           "additionalProperties": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["theme", "asset", "color", "size"],
+            "required": ["style"],
             "properties": {
-              "theme": {
+              "style": {
                 "type": "string",
-                "description": "Nome do tema de fonte base (deve existir em fontThemes)."
+                "description": "Nome do estilo de fonte base (deve existir em fontStyles)."
               },
               "asset": {
                 "type": "string",
-                "description": "Sobrescrita de arquivo de fonte. String vazia mantém o asset do tema base."
+                "description": "Sobrescrita de arquivo de fonte. Quando omitido, mantém o asset do estilo base."
               },
               "color": {
                 "type": "string",
-                "description": "Sobrescrita de cor em hex. String vazia mantém a cor do tema base."
+                "description": "Sobrescrita de cor em hex. Quando omitido, mantém a cor do estilo base."
               },
               "size": {
                 "type": "number",
                 "minimum": 0.0,
                 "maximum": 256.0,
-                "description": "Sobrescrita de tamanho. 0.0 mantém o tamanho do tema base."
+                "description": "Sobrescrita de tamanho. Quando omitido, mantém o tamanho do estilo base."
               }
             }
           }
@@ -494,7 +494,8 @@
         "height",
         "width",
         "value",
-        "hue"
+        "hue",
+        "teeth_saturation"
       ],
       "properties": {
         "default": {
@@ -538,8 +539,65 @@
           "description": "Controla o ajuste de valor (luminosidade HSV) da imagem."
         },
         "hue": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "valueSuffix",
+            "minValue",
+            "maxValue",
+            "step",
+            "defaultValue"
+          ],
+          "properties": {
+            "variableLabel": {
+              "type": "string",
+              "description": "Texto exibido no label que nomeia a variável controlada pelo slider. Opcional."
+            },
+            "valueSuffix": {
+              "type": "string",
+              "description": "Sufixo mostrado ao lado do valor em tempo real (ex.: %, px)."
+            },
+            "valueFormat": {
+              "type": "string",
+              "description": "Template de formatação printf para exibição do valor (ex.: %+.2f%s, %.0f%s, %3d%s)."
+            },
+            "minValue": {
+              "type": "number",
+              "minimum": -1000000.0,
+              "maximum": 1000000.0,
+              "description": "Valor mínimo permitido no slider."
+            },
+            "maxValue": {
+              "type": "number",
+              "minimum": -1000000.0,
+              "maximum": 1000000.0,
+              "description": "Valor máximo permitido no slider. Deve ser maior ou igual ao mínimo."
+            },
+            "step": {
+              "type": "number",
+              "exclusiveMinimum": 0.0,
+              "maximum": 1000000.0,
+              "description": "Passo de variação aplicado ao arrastar o slider."
+            },
+            "defaultValue": {
+              "type": "number",
+              "minimum": -1000000.0,
+              "maximum": 1000000.0,
+              "description": "Valor inicial do slider ao abrir o flyout."
+            },
+            "saturationDecreasePoint": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 180.0,
+              "default": 150.0,
+              "description": "Valor absoluto de matiz (0–180) a partir do qual a saturação começa a diminuir linearmente até 0 nos extremos (±180). Ex.: com 150, saturação máxima é mantida de 0 a ±150 e cai de ±150 a ±180."
+            }
+          },
+          "description": "Controla o ajuste de matiz (hue) da imagem. Inclui ponto de queda de saturação específico da ferramenta de matiz."
+        },
+        "teeth_saturation": {
           "$ref": "#/$defs/flyoutSliderConfig",
-          "description": "Controla o ajuste de matiz (hue) da imagem."
+          "description": "Controla o ajuste de saturação da cor dos dentes no render 3D."
         }
       }
     },
@@ -593,8 +651,7 @@
         "worldEnvironment",
         "teethModel",
         "teethWidthDistribution",
-        "viewportTexture",
-        "teethColor"
+        "viewportTexture"
       ],
       "properties": {
         "camera": {
@@ -959,22 +1016,6 @@
               "minimum": 0.01,
               "maximum": 5.0,
               "description": "Escala inicial do TextureRect de viewport em relação ao tamanho do container."
-            }
-          }
-        },
-        "teethColor": {
-          "type": "object",
-          "description": "Ajuste de cor do material dos dentes no render 3D. Aplica-se ao material compartilhado do modelo.",
-          "additionalProperties": false,
-          "required": [
-            "saturation"
-          ],
-          "properties": {
-            "saturation": {
-              "type": "number",
-              "minimum": 0.0,
-              "maximum": 1.0,
-              "description": "Saturação aplicada ao material dos dentes. 0.0 remove toda cor (tons de cinza), 1.0 mantém saturação total."
             }
           }
         }
