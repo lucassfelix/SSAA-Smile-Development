@@ -19,6 +19,7 @@
     "rotationLine",
     "rotationHandle",
     "rotationCircle",
+    "perToothRotation",
     "faceLines",
     "larguraPresets",
     "superposicaoLine",
@@ -26,7 +27,8 @@
     "superposicaoScaleHandle",
     "superposicaoRotationHandle",
     "superposicaoLabels",
-    "drawing"
+    "drawing",
+    "arrangeLimits"
   ],
   "$defs": {
     "corHex": {
@@ -599,12 +601,13 @@
       "description": "Atalhos de teclado configuráveis.",
       "additionalProperties": false,
       "required": [
-        "resetView",
-        "returnToProject",
-        "loadConfig",
-        "downloadConfigJson",
-        "resetCache",
-        "resetEverything"
+      	"resetView",
+      	"returnToProject",
+      	"loadConfig",
+      	"downloadConfigJson",
+      	"saveConfigToCloud",
+      	"resetCache",
+      	"resetEverything"
       ],
       "properties": {
         "resetView": {
@@ -620,8 +623,12 @@
           "description": "Atalho para carregar configuração."
         },
         "downloadConfigJson": {
-          "$ref": "#/$defs/teclaAtalho",
-          "description": "Atalho para baixar a configuração atual em JSON."
+        	"$ref": "#/$defs/teclaAtalho",
+        	"description": "Atalho para baixar a configuração atual em JSON."
+        },
+        "saveConfigToCloud": {
+        	"$ref": "#/$defs/teclaAtalho",
+        	"description": "Atalho para salvar a configuração atual na nuvem (Supabase)."
         },
         "resetCache": {
           "$ref": "#/$defs/teclaAtalho",
@@ -941,39 +948,12 @@
         },
         "teethWidthDistribution": {
           "type": "object",
-          "description": "Distribuição proporcional de largura por dente (ferramenta LARGURA). Mantém o span total da arcada e espelha pares entre quadrantes.",
+          "description": "Distribuição proporcional de largura por dente (ferramenta LARGURA). Mantém o span total da arcada e espelha pares entre quadrantes. Os pares de referência/espelho e a ordenação mesial→distal são auto-descobertos em runtime a partir do TeethModelReference (não mais configurados aqui).",
           "additionalProperties": false,
           "required": [
-            "referenceTeeth",
-            "mirrorPairs",
             "contrastExponent"
           ],
           "properties": {
-            "referenceTeeth": {
-              "type": "array",
-              "description": "Nomes dos nós de dente do quadrante de referência (4 dentes), ordenados mesial→distal na aplicação.",
-              "minItems": 4,
-              "maxItems": 4,
-              "items": {
-                "type": "string",
-                "minLength": 1
-              }
-            },
-            "mirrorPairs": {
-              "type": "array",
-              "description": "Pares [referência, espelho] entre quadrantes (4 pares).",
-              "minItems": 4,
-              "maxItems": 4,
-              "items": {
-                "type": "array",
-                "minItems": 2,
-                "maxItems": 2,
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              }
-            },
             "contrastExponent": {
               "type": "number",
               "minimum": 1.0,
@@ -1175,6 +1155,62 @@
         "color": {
           "$ref": "#/$defs/corHex",
           "description": "Cor do círculo de rotação."
+        }
+      }
+    },
+    "perToothRotation": {
+      "type": "object",
+      "description": "Parâmetros do círculo de rotação por dente da ferramenta ARRANGE. O raio é fixo (não depende da bounding box do dente) para evitar variação de tamanho durante a rotação.",
+      "additionalProperties": false,
+      "required": [
+        "color",
+        "dashLength",
+        "dashGap",
+        "thickness",
+        "fixedRadius",
+        "rotationFactor",
+        "cursorHideDistance"
+      ],
+      "properties": {
+        "color": {
+          "$ref": "#/$defs/corHex",
+          "description": "Cor do círculo de rotação por dente."
+        },
+        "dashLength": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 2000.0,
+          "description": "Comprimento dos traços do círculo de rotação por dente."
+        },
+        "dashGap": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 2000.0,
+          "description": "Espaçamento entre traços do círculo de rotação por dente."
+        },
+        "thickness": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 50.0,
+          "description": "Espessura da linha do círculo de rotação por dente."
+        },
+        "fixedRadius": {
+          "type": "number",
+          "minimum": 20.0,
+          "maximum": 500.0,
+          "description": "Raio fixo do círculo de rotação por dente, em pixels. Não varia com a bounding box do dente."
+        },
+        "rotationFactor": {
+          "type": "number",
+          "minimum": 0.00005,
+          "maximum": 5.0,
+          "description": "Fator de conversão entre deslocamento do mouse e variação angular no arrasto do handle de rotação por dente."
+        },
+        "cursorHideDistance": {
+          "type": "number",
+          "minimum": 20.0,
+          "maximum": 5000.0,
+          "description": "Distância do cursor (em pixels) a partir da qual o handle de rotação por dente é ocultado."
         }
       }
     },
@@ -1415,6 +1451,47 @@
           "minimum": 0.0,
           "maximum": 4.0,
           "description": "Passo de grade para quantizar vértices 2D antes de desenhar (0 = desligado). Ex.: 0.5 = meio pixel, reduz shimmer em traços com zoom."
+        }
+      }
+    },
+    "arrangeLimits": {
+      "type": "object",
+      "description": "Limites máximos para os ajustes finos da ferramenta ARRANGE (posição, escala, rotação por dente). Um offset de rotação com valor 0 significa \"sem limite\".",
+      "additionalProperties": false,
+      "required": [
+        "positionMaxOffset",
+        "scaleMinFactor",
+        "scaleMaxFactor",
+        "rotationMaxDegrees"
+      ],
+      "properties": {
+        "positionMaxOffset": {
+          "type": "number",
+          "default": 100.0,
+          "minimum": 0.0,
+          "maximum": 10000.0,
+          "description": "Deslocamento máximo em unidades 3D do offset de posição por dente. O vetor de offset é truncado para este comprimento máximo."
+        },
+        "scaleMinFactor": {
+          "type": "number",
+          "default": 0.8,
+          "minimum": 0.01,
+          "maximum": 10.0,
+          "description": "Fator mínimo de escala por dente (ex.: 0.8 = 80% do tamanho baseline)."
+        },
+        "scaleMaxFactor": {
+          "type": "number",
+          "default": 1.2,
+          "minimum": 0.01,
+          "maximum": 10.0,
+          "description": "Fator máximo de escala por dente (ex.: 1.2 = 120% do tamanho baseline)."
+        },
+        "rotationMaxDegrees": {
+          "type": "number",
+          "default": 0.0,
+          "minimum": 0.0,
+          "maximum": 3600.0,
+          "description": "Limite máximo de rotação em graus por eixo. Valor 0 significa sem limite (comportamento atual, clamp não é aplicado)."
         }
       }
     }
