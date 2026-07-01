@@ -160,6 +160,10 @@
           "$ref": "#/$defs/corHex",
           "description": "Cor da linha da caixa delimitadora."
         },
+        "selectionIndicatorColor": {
+          "$ref": "#/$defs/corHex",
+          "description": "Cor do contorno no estado indicador de seleção distante (ARRANGE): exibido quando o cursor se afasta e o círculo de rotação some, apenas para sinalizar que ainda há um dente selecionado."
+        },
         "hoverMargin": {
           "type": "number",
           "minimum": 0.0,
