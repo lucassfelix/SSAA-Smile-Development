@@ -652,6 +652,7 @@
         "camera",
         "directionalLight",
         "omniLight",
+        "outline",
         "worldEnvironment",
         "teethModel",
         "teethWidthDistribution",
@@ -854,6 +855,53 @@
               "minimum": 0.01,
               "maximum": 200.0,
               "description": "Alcance da omni light em unidades 3D. Valores maiores espalham a contribuição por mais área; valores menores concentram o preenchimento próximo da luz."
+            }
+          }
+        },
+        "outline": {
+          "type": "object",
+          "description": "Parâmetros do contorno por dente (ID buffer + detecção de borda). Controla cor, espessura e suavização do contorno desenhado ao redor de cada dente.",
+          "additionalProperties": false,
+          "required": [
+            "color",
+            "thicknessPx",
+            "aaWidthPx"
+          ],
+          "properties": {
+            "color": {
+              "type": "string",
+              "description": "Cor do contorno dos dentes em formato hexadecimal (ex.: #FFFFFF). Suporta canal alfa (ex.: #FFFFFFCC)."
+            },
+            "thicknessPx": {
+              "type": "number",
+              "minimum": 0.5,
+              "maximum": 16.0,
+              "description": "Espessura do contorno em pixels da textura de ID. Valores maiores engrossam a linha; o custo do shader cresce com a espessura."
+            },
+            "aaWidthPx": {
+              "type": "number",
+              "minimum": 0.25,
+              "maximum": 4.0,
+              "description": "Largura do fade de anti-aliasing (em pixels) aplicado na borda do contorno. Aumente para bordas mais suaves; reduza para linhas mais nítidas."
+            },
+            "arrange": {
+              "type": "object",
+              "description": "Cores de contorno específicas da ferramenta ARRANGE: sinalizam o dente sob o cursor (hover) e o dente selecionado (e seu simétrico na simetria).",
+              "additionalProperties": false,
+              "required": [
+                "hoverColor",
+                "selectedColor"
+              ],
+              "properties": {
+                "hoverColor": {
+                  "type": "string",
+                  "description": "Cor do contorno do dente sob o cursor no ARRANGE, em hexadecimal (ex.: #FFFFFF). Suporta canal alfa."
+                },
+                "selectedColor": {
+                  "type": "string",
+                  "description": "Cor do contorno do dente selecionado (e do simétrico na simetria) no ARRANGE, em hexadecimal (ex.: #87FFE2D0). Suporta canal alfa."
+                }
+              }
             }
           }
         },
@@ -1474,7 +1522,7 @@
           "default": 100.0,
           "minimum": 0.0,
           "maximum": 10000.0,
-          "description": "Deslocamento máximo em unidades 3D do offset de posição por dente. O vetor de offset é truncado para este comprimento máximo."
+          "description": "Deslocamento máximo em unidades 3D do offset de posição por dente. Cada componente (X, Y, Z) do offset é limitada independentemente a ±este valor, produzindo um limite em forma de caixa (retângulo na projeção de tela), e não um raio/círculo."
         },
         "scaleMinFactor": {
           "type": "number",
