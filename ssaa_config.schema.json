@@ -865,7 +865,12 @@
           "required": [
             "color",
             "thicknessPx",
-            "aaWidthPx"
+            "aaWidthPx",
+            "mode",
+            "idSupersample",
+            "vectorWidthPx",
+            "vectorSmoothing",
+            "simplifyEpsilonPx"
           ],
           "properties": {
             "color": {
@@ -883,6 +888,40 @@
               "minimum": 0.25,
               "maximum": 4.0,
               "description": "Largura do fade de anti-aliasing (em pixels) aplicado na borda do contorno. Aumente para bordas mais suaves; reduza para linhas mais nítidas."
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "id_shader",
+                "vector_flat",
+                "vector_occluded",
+                "texture_vector"
+              ],
+              "description": "Renderizador de contorno ativo. id_shader = passe de ID + shader de borda (depth-correct, GPU); vector_flat = silhuetas analíticas sem oclusão (linhas vetoriais nítidas, mas com linhas duplicadas/sobrepostas); vector_occluded = silhuetas vetoriais com oclusão 2D estilo painter (recorta dentes de trás pelos da frente); texture_vector = contornos extraídos da borda da máscara de ID de cada dente (Moore-neighbor) e desenhados como polilinhas vetoriais, com oclusão depth-correct vinda do passe de ID. O passe de ID permanece ativo neste modo."
+            },
+            "idSupersample": {
+              "type": "number",
+              "minimum": 1.0,
+              "maximum": 2.0,
+              "description": "Fator de supersampling (SSAA) interno do passe de ID no modo id_shader. Aumenta a resolução efetiva do buffer de ID para afinar a silhueta sem mesclar IDs (MSAA permanece desligado). Respeita o teto de 4096px do web."
+            },
+            "vectorWidthPx": {
+              "type": "number",
+              "minimum": 0.5,
+              "maximum": 16.0,
+              "description": "Espessura em pixels de tela das linhas vetoriais nos modos vector_flat / vector_occluded."
+            },
+            "vectorSmoothing": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 4.0,
+              "description": "Suavização Catmull-Rom aplicada às silhuetas vetoriais (0 = sem suavização)."
+            },
+            "simplifyEpsilonPx": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 8.0,
+              "description": "Tolerância (em pixels) da simplificação Ramer-Douglas-Peucker aplicada às silhuetas vetoriais antes do desenho."
             },
             "arrange": {
               "type": "object",
@@ -903,6 +942,15 @@
                 }
               }
             }
+          },
+          "arrangeMode": {
+            "type": "string",
+            "enum": [
+              "outline",
+              "bounding_box"
+            ],
+            "description": "Modo de sinalização de hover/seleção na ferramenta ARRANGE. outline = contorno 3D por dente (padrão atual); bounding_box = caixas delimitadoras tracejadas (hover view-only + indicador de seleção persistente no estado distante/rotação).",
+            "default": "outline"
           }
         },
         "worldEnvironment": {
